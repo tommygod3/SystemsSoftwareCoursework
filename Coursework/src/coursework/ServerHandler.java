@@ -20,14 +20,14 @@ public class ServerHandler implements Runnable
         }
         catch (IOException e)
         {
-            System.err.println("Error 1! - " + e.getMessage());
+            System.err.println("Error, can't connect! - " + e.getMessage());
         }
     }
     //Run function for multithreading
     public void run()
     {
         //At the moment server functionality is useless and placeholder
-        while (!message.equals("Quit"))
+        while (true)
         {
             try
             {
@@ -37,17 +37,9 @@ public class ServerHandler implements Runnable
             }
             catch (IOException e)
             {
-                System.err.println("Error 2! - " + e.getMessage());
+                System.err.println("Client " + client.getInetAddress() + " has disconnected");
+                break;
             } 
-        }
-        try
-        {
-            System.out.println("Client " + client.getInetAddress() + " has disconnected");
-            client.close();
-        }
-        catch(IOException e)
-        {
-            System.err.println("Error 3! - " + e.getMessage());
         }
     }
 }
