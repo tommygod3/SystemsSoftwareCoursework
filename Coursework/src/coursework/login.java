@@ -24,7 +24,7 @@ public class login extends javax.swing.JFrame {
         System.out.println("Y");
     }
     
-    public static UserData inData;
+    public UserData inData;
 
     /**
      * This method is called from within the constructor to initialise the form.
@@ -320,6 +320,7 @@ public class login extends javax.swing.JFrame {
     private void buttonAddGenreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddGenreActionPerformed
         // TODO add your handling code here:
         inData.listOfTastes.add(comboBoxTastes.getSelectedItem().toString());
+        areaTastes.append(comboBoxTastes.getSelectedItem().toString() + "\n");
     }//GEN-LAST:event_buttonAddGenreActionPerformed
 
     private void fieldRegisterPlaceOfBirthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldRegisterPlaceOfBirthActionPerformed

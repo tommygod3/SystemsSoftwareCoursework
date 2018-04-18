@@ -41,18 +41,18 @@ public class MainWindow extends javax.swing.JFrame {
         jScrollPane6 = new javax.swing.JScrollPane();
         jList4 = new javax.swing.JList<>();
         jLabel7 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        buttonPlay = new javax.swing.JButton();
+        buttonPost = new javax.swing.JButton();
+        buttonAddFriend = new javax.swing.JButton();
+        buttonChat = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jScrollPane3 = new javax.swing.JScrollPane();
         jList2 = new javax.swing.JList<>();
         jScrollPane7 = new javax.swing.JScrollPane();
         jList5 = new javax.swing.JList<>();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        buttonAccept = new javax.swing.JButton();
+        buttonReject = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -88,24 +88,39 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel7.setText("Post:");
         jLabel7.setPreferredSize(new java.awt.Dimension(32, 15));
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton1.setText("Play");
-        jButton1.setPreferredSize(new java.awt.Dimension(70, 35));
-
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton2.setText("Send");
-        jButton2.setPreferredSize(new java.awt.Dimension(70, 35));
-
-        jButton3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton3.setText("Add Friend");
-        jButton3.setPreferredSize(new java.awt.Dimension(70, 35));
-
-        jButton4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton4.setText("Chat");
-        jButton4.setPreferredSize(new java.awt.Dimension(70, 35));
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        buttonPlay.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        buttonPlay.setText("Play");
+        buttonPlay.setPreferredSize(new java.awt.Dimension(70, 35));
+        buttonPlay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                buttonPlayActionPerformed(evt);
+            }
+        });
+
+        buttonPost.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        buttonPost.setText("Send");
+        buttonPost.setPreferredSize(new java.awt.Dimension(70, 35));
+        buttonPost.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPostActionPerformed(evt);
+            }
+        });
+
+        buttonAddFriend.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        buttonAddFriend.setText("Add Friend");
+        buttonAddFriend.setPreferredSize(new java.awt.Dimension(70, 35));
+        buttonAddFriend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonAddFriendActionPerformed(evt);
+            }
+        });
+
+        buttonChat.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        buttonChat.setText("Chat");
+        buttonChat.setPreferredSize(new java.awt.Dimension(70, 35));
+        buttonChat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonChatActionPerformed(evt);
             }
         });
 
@@ -118,16 +133,21 @@ public class MainWindow extends javax.swing.JFrame {
         jList5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jScrollPane7.setViewportView(jList5);
 
-        jButton5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton5.setText("Accept");
-        jButton5.setPreferredSize(new java.awt.Dimension(70, 35));
-
-        jButton6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton6.setText("Reject");
-        jButton6.setPreferredSize(new java.awt.Dimension(70, 35));
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        buttonAccept.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        buttonAccept.setText("Accept");
+        buttonAccept.setPreferredSize(new java.awt.Dimension(70, 35));
+        buttonAccept.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                buttonAcceptActionPerformed(evt);
+            }
+        });
+
+        buttonReject.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        buttonReject.setText("Reject");
+        buttonReject.setPreferredSize(new java.awt.Dimension(70, 35));
+        buttonReject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonRejectActionPerformed(evt);
             }
         });
 
@@ -152,8 +172,8 @@ public class MainWindow extends javax.swing.JFrame {
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                                 .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE))
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(buttonAddFriend, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonChat, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -162,7 +182,7 @@ public class MainWindow extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
-                                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(buttonPlay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -170,9 +190,9 @@ public class MainWindow extends javax.swing.JFrame {
                                     .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                                            .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                            .addComponent(buttonAccept, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                                            .addComponent(buttonReject, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                                            .addComponent(buttonPost, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(jScrollPane4))
                                     .addComponent(jTextField1))))
@@ -199,7 +219,7 @@ public class MainWindow extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(5, 5, 5)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(buttonPlay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
@@ -207,9 +227,9 @@ public class MainWindow extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(32, 32, 32)
-                                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(buttonAddFriend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(buttonChat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -218,9 +238,9 @@ public class MainWindow extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(33, 33, 33)
-                                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(buttonAccept, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(buttonReject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jScrollPane7))))))
@@ -230,7 +250,7 @@ public class MainWindow extends javax.swing.JFrame {
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonPost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jScrollPane4))))
                 .addGap(30, 30, 30))
         );
@@ -238,13 +258,29 @@ public class MainWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void buttonChatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChatActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_buttonChatActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void buttonRejectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRejectActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }//GEN-LAST:event_buttonRejectActionPerformed
+
+    private void buttonAcceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAcceptActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonAcceptActionPerformed
+
+    private void buttonAddFriendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddFriendActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonAddFriendActionPerformed
+
+    private void buttonPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPlayActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonPlayActionPerformed
+
+    private void buttonPostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPostActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonPostActionPerformed
 
     /**
      * @param args the command line arguments
@@ -282,12 +318,12 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
+    private javax.swing.JButton buttonAccept;
+    private javax.swing.JButton buttonAddFriend;
+    private javax.swing.JButton buttonChat;
+    private javax.swing.JButton buttonPlay;
+    private javax.swing.JButton buttonPost;
+    private javax.swing.JButton buttonReject;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
