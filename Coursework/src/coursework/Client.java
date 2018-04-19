@@ -60,6 +60,7 @@ public class Client
         reply = inFromServer.readUTF();
         if(reply.equals("SUCCESS"))
         {
+            
             System.out.println("Logged in as " + myData.username);
         }
         if(reply.equals("FAILURE"))
