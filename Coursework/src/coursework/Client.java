@@ -17,8 +17,8 @@ public class Client
         inFromServer = new DataInputStream(server.getInputStream());
         outToServer = new DataOutputStream(server.getOutputStream());
         
-        login window = new login(myData);
-        window.setVisible(true);
+        login loginWindow = new login(myData);
+        loginWindow.setVisible(true);
         
         myData.ip = InetAddress.getLocalHost();
         //Wait for login form to be completed
@@ -39,10 +39,10 @@ public class Client
             register();
         }
         
-        //reply = inFromServer.readUTF();
-        //System.out.println(reply);
+        MainWindow mainWindow = new MainWindow(this);
+        mainWindow.setVisible(true);
         
-        logOut();
+        //logOut();
     }
     
     public static void main(String[] args) throws IOException
@@ -98,6 +98,7 @@ public class Client
     public void logOut() throws IOException
     {
         outToServer.writeUTF("LOGOUT");
+        System.out.println("Logging out");
         server.close();
     }
 }

@@ -1,21 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package coursework;
 
+import java.io.*;
 /**
- *
  * @author Tyler
  */
 public class MainWindow extends javax.swing.JFrame {
 
-    /**
-     * Creates new form MainWindow
-     */
-    public MainWindow() {
+    public Client theClient;
+    
+    public MainWindow(Client c) 
+    {
         initComponents();
+        theClient = c;
+    }
+    
+    public MainWindow() 
+    {
+        initComponents();
+        System.out.println("No link");
     }
 
     /**
@@ -268,6 +270,14 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void buttonAcceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAcceptActionPerformed
         // TODO add your handling code here:
+        try
+        {
+            theClient.logOut();
+        }
+        catch (IOException e)
+        {
+            
+        }
     }//GEN-LAST:event_buttonAcceptActionPerformed
 
     private void buttonAddFriendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddFriendActionPerformed

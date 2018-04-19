@@ -21,7 +21,7 @@ public class login extends javax.swing.JFrame {
     
     public login() {
         initComponents();
-        System.out.println("Y");
+        System.out.println("No link");
     }
     
     public UserData inData;
