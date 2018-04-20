@@ -1,14 +1,8 @@
-package coursework;
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * @author Tyler Knowles, Tommy Godfrey
  */
+package coursework;
 
-/**
- *
- * @author Tyler
- */
 public class login extends javax.swing.JFrame {
 
     /**
@@ -40,11 +34,9 @@ public class login extends javax.swing.JFrame {
         fieldLoginUsername = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        fieldLoginPassword = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         fieldRegisterUsername = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        fieldRegisterPassword = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         comboBoxTastes = new javax.swing.JComboBox<>();
         buttonAddGenre = new javax.swing.JButton();
@@ -56,6 +48,8 @@ public class login extends javax.swing.JFrame {
         fieldRegisterDateOfBirth = new javax.swing.JTextField();
         buttonLogin = new javax.swing.JButton();
         buttonRegister = new javax.swing.JButton();
+        fieldLoginPassword = new javax.swing.JPasswordField();
+        fieldRegisterPassword = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -83,18 +77,6 @@ public class login extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel4.setText("Password");
 
-        fieldLoginPassword.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        fieldLoginPassword.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                fieldLoginPasswordFocusLost(evt);
-            }
-        });
-        fieldLoginPassword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fieldLoginPasswordActionPerformed(evt);
-            }
-        });
-
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel7.setText("Username");
 
@@ -112,18 +94,6 @@ public class login extends javax.swing.JFrame {
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel8.setText("Password");
-
-        fieldRegisterPassword.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        fieldRegisterPassword.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                fieldRegisterPasswordFocusLost(evt);
-            }
-        });
-        fieldRegisterPassword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fieldRegisterPasswordActionPerformed(evt);
-            }
-        });
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel9.setText("Music Profile");
@@ -194,27 +164,29 @@ public class login extends javax.swing.JFrame {
             }
         });
 
+        fieldLoginPassword.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        fieldRegisterPassword.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(28, 28, 28)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(fieldLoginUsername)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(fieldLoginPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(buttonLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+                    .addComponent(fieldLoginUsername)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(buttonLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(fieldLoginPassword))
                 .addGap(141, 141, 141)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(fieldRegisterPassword)
                                 .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(fieldRegisterUsername)
                                 .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
@@ -222,7 +194,8 @@ public class login extends javax.swing.JFrame {
                                 .addComponent(fieldRegisterDateOfBirth)
                                 .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(fieldRegisterPlaceOfBirth)
-                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(fieldRegisterPassword)))
                         .addGap(38, 38, 38)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -266,8 +239,8 @@ public class login extends javax.swing.JFrame {
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(fieldRegisterPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(5, 5, 5)
+                                .addComponent(fieldRegisterPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -286,7 +259,7 @@ public class login extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fieldLoginPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(fieldLoginPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(buttonLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -301,17 +274,9 @@ public class login extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_fieldLoginUsernameActionPerformed
 
-    private void fieldLoginPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldLoginPasswordActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_fieldLoginPasswordActionPerformed
-
     private void fieldRegisterUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldRegisterUsernameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_fieldRegisterUsernameActionPerformed
-
-    private void fieldRegisterPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldRegisterPasswordActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_fieldRegisterPasswordActionPerformed
 
     private void comboBoxTastesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxTastesActionPerformed
         // TODO add your handling code here:
@@ -334,14 +299,16 @@ public class login extends javax.swing.JFrame {
     private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
         // Login button pressed:
         inData.username = fieldLoginUsername.getText();
-        inData.password = fieldLoginPassword.getText();
+        String pass = new String(fieldLoginPassword.getPassword());
+        inData.password = pass;
         dispose();
     }//GEN-LAST:event_buttonLoginActionPerformed
 
     private void buttonRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRegisterActionPerformed
         // Register button pressed:
         inData.username = fieldRegisterUsername.getText();
-        inData.password = fieldRegisterPassword.getText();
+        String pass = new String(fieldRegisterPassword.getPassword());
+        inData.password = pass;
         inData.placeOfBirth = fieldRegisterPlaceOfBirth.getText();
         inData.dateOfBirth = fieldRegisterDateOfBirth.getText();
         dispose();
@@ -352,20 +319,10 @@ public class login extends javax.swing.JFrame {
         
     }//GEN-LAST:event_fieldLoginUsernameFocusLost
 
-    private void fieldLoginPasswordFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldLoginPasswordFocusLost
-        // When focus lost from login password:
-        
-    }//GEN-LAST:event_fieldLoginPasswordFocusLost
-
     private void fieldRegisterUsernameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldRegisterUsernameFocusLost
         // When focus lost from register username:
         
     }//GEN-LAST:event_fieldRegisterUsernameFocusLost
-
-    private void fieldRegisterPasswordFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldRegisterPasswordFocusLost
-        // When focus lost from register password:
-        
-    }//GEN-LAST:event_fieldRegisterPasswordFocusLost
 
     private void fieldRegisterPlaceOfBirthFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldRegisterPlaceOfBirthFocusLost
         // When focus lost from register POB:
@@ -418,10 +375,10 @@ public class login extends javax.swing.JFrame {
     private javax.swing.JButton buttonLogin;
     private javax.swing.JButton buttonRegister;
     private javax.swing.JComboBox<String> comboBoxTastes;
-    private javax.swing.JTextField fieldLoginPassword;
+    private javax.swing.JPasswordField fieldLoginPassword;
     private javax.swing.JTextField fieldLoginUsername;
     private javax.swing.JTextField fieldRegisterDateOfBirth;
-    private javax.swing.JTextField fieldRegisterPassword;
+    private javax.swing.JPasswordField fieldRegisterPassword;
     private javax.swing.JTextField fieldRegisterPlaceOfBirth;
     private javax.swing.JTextField fieldRegisterUsername;
     private javax.swing.JLabel jLabel1;
