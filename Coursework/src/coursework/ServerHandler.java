@@ -9,9 +9,6 @@ import java.util.*;
 
 public class ServerHandler implements Runnable
 {
-    DataInputStream inFromClient;
-    DataOutputStream outToClient;
-    
     String message = "";
     Socket client;
     public ArrayList<UserData> usersData = new ArrayList<>();
@@ -25,16 +22,6 @@ public class ServerHandler implements Runnable
     public ServerHandler(Socket c)
     {
         client = c;
-        try
-        {
-            inFromClient = new DataInputStream(client.getInputStream());
-            outToClient = new DataOutputStream(client.getOutputStream());
-            
-        }
-        catch (IOException e)
-        {
-            System.err.println("Error, can't connect! - " + e.getMessage());
-        }
         updateReadData();
     }
     
@@ -215,6 +202,7 @@ public class ServerHandler implements Runnable
         {
             try
             {
+            
                 message = inFromClient.readUTF();
                 System.out.println("In from client " + client.getInetAddress() + ": " + message);
                 if (message.equals("LOGOUT"))

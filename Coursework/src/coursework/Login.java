@@ -29,7 +29,7 @@ public class Login extends javax.swing.JFrame
     public void registering() 
     {
         System.out.println("Attempting to make new user: " + inData.username);
-        if (myTalker.clientRegister(inData) == true)
+        if (myTalker.clientRegister(inData,false) == true)
         {
             System.out.println("New user made: " + inData.username);
             new MainWindow(inData.username).setVisible(true);
