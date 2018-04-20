@@ -1,24 +1,72 @@
 /*
- * @author Tyler Knowles, Tommy Godfrey
+ * @author Tommy Godfrey, Tyler Knowles
  */
 package coursework;
 
-public class login extends javax.swing.JFrame {
+import java.io.*;
+import java.util.*;
+import java.net.*;
 
-    /**
-     * Creates new form login
-     */
-    public login(UserData d) {
-        initComponents();
-        inData = d;
-    }
-    
-    public login() {
-        initComponents();
-        System.out.println("No link");
-    }
-    
+public class Login extends javax.swing.JFrame 
+{
     public UserData inData;
+    ClientTalker myTalker;
+    
+    public Login()
+    {
+        initComponents();
+        inData = new UserData();
+        try
+        {
+            inData.ip = InetAddress.getLocalHost();
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    public void registering() 
+    {
+        System.out.println("Attempting to make new user: " + inData.username);
+        if (myTalker.clientRegister(inData) == true)
+        {
+            System.out.println("New user made: " + inData.username);
+            new MainWindow(inData.username).setVisible(true);
+        }
+        else
+        {
+            System.out.println("Failed to make new user: " + inData.username);
+        }
+    }
+    
+    public Boolean loggingIn()
+    {
+        /*
+        System.out.println("Attempting to log in as: " + inData.username);
+        try
+        {
+            outToServer.writeUTF("LOGIN");
+            outToServer.writeUTF(myData.username);
+            outToServer.writeUTF(myData.password);
+            reply = inFromServer.readUTF();
+        }
+        catch (IOException e)
+        {
+        }
+        
+        if(reply.equals("SUCCESS"))
+        {
+            
+            System.out.println("Logged in as " + myData.username);
+            return true;
+        }
+        if(reply.equals("FAILURE"))
+        {
+            System.out.println("Failed to log in");
+        }*/
+        return false;
+    }
 
     /**
      * This method is called from within the constructor to initialise the form.
@@ -301,6 +349,7 @@ public class login extends javax.swing.JFrame {
         inData.username = fieldLoginUsername.getText();
         String pass = new String(fieldLoginPassword.getPassword());
         inData.password = pass;
+        loggingIn();
         dispose();
     }//GEN-LAST:event_buttonLoginActionPerformed
 
@@ -311,11 +360,12 @@ public class login extends javax.swing.JFrame {
         inData.password = pass;
         inData.placeOfBirth = fieldRegisterPlaceOfBirth.getText();
         inData.dateOfBirth = fieldRegisterDateOfBirth.getText();
+        registering();
         dispose();
     }//GEN-LAST:event_buttonRegisterActionPerformed
 
     private void fieldLoginUsernameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldLoginUsernameFocusLost
-        // When focus lost from login username:
+        // When focus lost from Login username:
         
     }//GEN-LAST:event_fieldLoginUsernameFocusLost
 
@@ -351,20 +401,21 @@ public class login extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new login().setVisible(true);
+                new Login().setVisible(true);
             }
         });
     }

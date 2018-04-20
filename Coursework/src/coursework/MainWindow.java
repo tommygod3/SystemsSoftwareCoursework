@@ -1,26 +1,75 @@
 /*
- * @author Tyler Knowles, Tommy Godfrey
+ * @author Tommy Godfrey, Tyler Knowles
  */
 package coursework;
 
 import java.io.*;
 import java.util.*;
+import java.net.*;
 
-public class MainWindow extends javax.swing.JFrame {
-
-    public Client theClient;
-    
-    public MainWindow(Client c) 
+public class MainWindow extends javax.swing.JFrame 
+{
+    public String myUsername = null;
+    public UserData myData = new UserData();
+    String reply = null;
+    public ArrayList<UserData> usersData = new ArrayList<>();
+    public ArrayList<UserData> onlineData = new ArrayList<>();
+    Runnable updater = () -> 
     {
-        initComponents();
-        theClient = c;
-    }
+        while(true)
+        {
+            try
+            {
+                updateOnlineData();
+                Thread.sleep(2000);
+            }
+            catch (InterruptedException e)
+            {
+                
+            }
+        }
+    };
     
     public MainWindow() 
     {
         initComponents();
-        System.out.println("No link");
     }
+    
+    public MainWindow(String username) 
+    {
+        initComponents();
+    }
+    
+    //Update online list
+    public void updateOnlineData()
+    {
+        /*
+        try
+        {
+            outToServer.writeUTF("UPDATEONLINE");
+            ObjectInputStream in = new ObjectInputStream(server.getInputStream());
+            Object a = in.readObject();
+            ArrayList<UserData> b = (ArrayList<UserData>) a;
+            onlineData = b ;
+        }
+        catch (IOException e)
+        {
+            
+        }
+        catch (ClassNotFoundException n)
+        {
+            
+        }*/
+    }
+    
+
+    public void logOut() throws IOException
+    {/*
+        outToServer.writeUTF("LOGOUT");
+        System.out.println("Logging out");
+        server.close();*/
+    }
+
 
     public void setOnlineUsers(ArrayList<UserData> onlineUsers)
     {
@@ -305,7 +354,7 @@ public class MainWindow extends javax.swing.JFrame {
         // TODO add your handling code here:
         try
         {
-            theClient.logOut();
+            logOut();
         }
         catch (IOException e)
         {
@@ -359,7 +408,7 @@ public class MainWindow extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainWindow().setVisible(true);
+                new MainWindow().setVisible(false);
             }
         });
     }
