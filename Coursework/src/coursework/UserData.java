@@ -12,4 +12,5 @@ public class UserData implements Serializable
     public String placeOfBirth;
     public String dateOfBirth;
     public ArrayList<String> listOfTastes = new ArrayList<>();
+    public ArrayList<String> listOfFriends = new ArrayList<>();
 }

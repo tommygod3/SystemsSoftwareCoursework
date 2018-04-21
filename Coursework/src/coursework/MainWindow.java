@@ -15,7 +15,8 @@ public class MainWindow extends javax.swing.JFrame
     public UserData myData;
     Boolean running;
     
-    public ArrayList<UserData> onlineUsersData = new ArrayList<>();
+    public ArrayList<String> onlineUsers = new ArrayList<>();
+    public ArrayList<String> myRequests = new ArrayList<>();
     
     Runnable updater = () -> 
     {
@@ -28,6 +29,7 @@ public class MainWindow extends javax.swing.JFrame
             try
             {
                 updateOnline();
+                updateRequests();
                 Thread.sleep(2000);
             }
             catch (Exception e)
@@ -59,16 +61,26 @@ public class MainWindow extends javax.swing.JFrame
     //Update online list
     public void updateOnline()
     {
-        onlineUsersData = myTalker.clientGetUsers(1);
+        onlineUsers = myTalker.clientGetUsers(1);
         DefaultListModel listModel = new DefaultListModel();
-        for(int i = 0; i < onlineUsersData.size(); i++)
+        for(int i = 0; i < onlineUsers.size(); i++)
         {
-            listModel.add(i,onlineUsersData.get(i).username);
+            listModel.add(i,onlineUsers.get(i));
         }
         onlineList.setModel(listModel);
     }
     
-
+    public void updateRequests()
+    {
+        myRequests = myTalker.getRequests();
+        DefaultListModel listModel = new DefaultListModel();
+        for(int i = 0; i < myRequests.size(); i++)
+        {
+            listModel.add(i,myRequests.get(i));
+        }
+        requestList.setModel(listModel);
+    }
+    
     public void logOut()
     {
         running = false;
@@ -370,6 +382,10 @@ public class MainWindow extends javax.swing.JFrame
 
     private void buttonAddFriendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddFriendActionPerformed
         // TODO add your handling code here:
+        if (onlineList.getSelectedValue() != null)
+        {
+            myTalker.requestFriendship(onlineList.getSelectedValue());
+        }
     }//GEN-LAST:event_buttonAddFriendActionPerformed
 
     private void buttonPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPlayActionPerformed

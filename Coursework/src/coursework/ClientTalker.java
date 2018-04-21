@@ -40,9 +40,9 @@ public class ClientTalker
     }
     
     //Returns list of user data, 0 = all users, 1 = online, 2 = friends
-    public ArrayList<UserData> clientGetUsers(int selection)
+    public ArrayList<String> clientGetUsers(int selection)
     {
-        ArrayList<UserData> onlineUsers = null;
+        ArrayList<String> onlineUsers = null;
         String command = null;
         Object reply = null;
         if (selection == 0)
@@ -66,7 +66,12 @@ public class ClientTalker
         {
             System.err.println(e.getMessage());
         }
-        onlineUsers = (ArrayList<UserData>) reply;
+        onlineUsers = (ArrayList<String>) reply;
+        System.out.println("From server: ");
+        for (int i = 0; i < onlineUsers.size(); i++)
+        {
+            System.out.println(onlineUsers.get(i));
+        }
         return onlineUsers;
     }
     
@@ -123,5 +128,35 @@ public class ClientTalker
         }
         desiredData = (UserData) reply;
         return desiredData;
+    }
+    
+    public void requestFriendship(String username)
+    {
+        try
+        {
+            outToServer.writeObject("REQUESTFRIEND");
+            outToServer.writeObject(username);
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    public ArrayList<String> getRequests()
+    {
+        ArrayList<String> requests = null;
+        Object in = null;
+        try
+        {
+            outToServer.writeObject("GETREQUESTS");
+            in = inFromServer.readObject();
+            requests = (ArrayList<String>) in;
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+        return requests;
     }
 }

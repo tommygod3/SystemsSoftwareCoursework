@@ -17,6 +17,7 @@ public class ServerHandler implements Runnable
     UserData clientsData;
     String fileNameUserData = "userdata.txt";
     String fileNameOnlineUsers = "onlineusers.txt";
+    String fileNameRequests = "friendrequests.txt";
     Runnable updater = () -> 
     {
         while(true)
@@ -38,6 +39,7 @@ public class ServerHandler implements Runnable
     public ServerHandler(Socket c)
     {
         client = c;
+        new Thread(updater).start();
         try
         {
             inFromClient = new ObjectInputStream(client.getInputStream());
@@ -66,7 +68,7 @@ public class ServerHandler implements Runnable
                 in = inFromClient.readObject();
                 dataU = (UserData) in;
             }
-            if (command.equals("GETDATA"))
+            if ((command.equals("GETDATA")) || (command.equals("REQUESTFRIEND")))
             {
                 in = inFromClient.readObject();
                 dataS = (String) in;
@@ -106,6 +108,14 @@ public class ServerHandler implements Runnable
        {
            registerClient(dataU);
        }
+       if (command.equals("REQUESTFRIEND"))
+       {
+           requestFriendship(dataS);
+       }
+       if (command.equals("GETREQUESTS"))
+       {
+           sendRequests();
+       }
        return false;
     }
     
@@ -121,6 +131,50 @@ public class ServerHandler implements Runnable
             }
         }
         return found;
+    }
+    
+    //Updates databse with friend request
+    public void requestFriendship(String usernameToAdd)
+    {
+        try
+        {
+            FileWriter fileWriter = new FileWriter(fileNameRequests, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(usernameToAdd + "," + clientsData.username);
+            bufferedWriter.newLine();
+            bufferedWriter.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println("Error writing request in: " + e.getMessage());
+        }
+    }
+    
+    public void sendRequests()
+    {
+        ArrayList<String> requests = new ArrayList<>();;
+        String parser = null;
+        try
+        {
+            FileReader fileReader = new FileReader(fileNameRequests);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            parser = bufferedReader.readLine();
+            while (parser != null)
+            {
+                String[] lineSplit = parser.split(",");
+                if (lineSplit[0].equals(clientsData.username))
+                {
+                    requests.add(lineSplit[1]);
+                }
+                parser = bufferedReader.readLine();
+            }
+            outToClient.writeObject(requests);
+            bufferedReader.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
     }
     
     public void sendOneUser(String username)
@@ -153,9 +207,14 @@ public class ServerHandler implements Runnable
         {
             //usersToSend = the users friends data...
         }
+        ArrayList<String> usernameSend = new ArrayList<>();
+        for (int i = 0; i < usersToSend.size(); i++)
+        {
+            usernameSend.add(usersToSend.get(i).username);
+        }
         try
         {
-            outToClient.writeObject(usersToSend);
+            outToClient.writeObject(usernameSend);
         }
         catch (Exception e)
         {
@@ -167,6 +226,7 @@ public class ServerHandler implements Runnable
     public void updateReadData()
     {
         String parser = null;
+        usersData.clear();
         try
         {
             FileReader fileReader = new FileReader(fileNameUserData);
@@ -215,6 +275,7 @@ public class ServerHandler implements Runnable
     public void updateReadOnlineUsers()
     {
         String parser = null;
+        onlineData.clear();
         try
         {
             FileReader fileReader = new FileReader(fileNameOnlineUsers);
@@ -223,6 +284,7 @@ public class ServerHandler implements Runnable
             while (parser != null)
             {
                 String userLine = parser;
+                
                 UserData thisLine = new UserData();
                 thisLine = userSearch(userLine);
                 onlineData.add(thisLine);
