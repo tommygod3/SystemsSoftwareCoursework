@@ -53,10 +53,6 @@ public class ClientTalker
         {
             command = "GETONLINE";
         }
-        if (selection == 2)
-        {
-            command = "GETFRIENDS";
-        }
         try
         {
             outToServer.writeObject(command);
@@ -67,11 +63,6 @@ public class ClientTalker
             System.err.println(e.getMessage());
         }
         onlineUsers = (ArrayList<String>) reply;
-        System.out.println("From server: ");
-        for (int i = 0; i < onlineUsers.size(); i++)
-        {
-            System.out.println(onlineUsers.get(i));
-        }
         return onlineUsers;
     }
     
@@ -135,6 +126,28 @@ public class ClientTalker
         try
         {
             outToServer.writeObject("REQUESTFRIEND");
+            outToServer.writeObject(username);
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    public void replyRequest(String username, Boolean accepted)
+    {
+        try
+        {
+            String message = null;
+            if (accepted)
+            {
+                message = "REPLYYES";
+            }
+            else
+            {
+                message = "REPLYNO";
+            }
+            outToServer.writeObject(message);
             outToServer.writeObject(username);
         }
         catch (Exception e)

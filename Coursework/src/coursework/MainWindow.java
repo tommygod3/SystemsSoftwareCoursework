@@ -17,6 +17,7 @@ public class MainWindow extends javax.swing.JFrame
     
     public ArrayList<String> onlineUsers = new ArrayList<>();
     public ArrayList<String> myRequests = new ArrayList<>();
+    public ArrayList<String> myFriends = new ArrayList<>();
     
     Runnable updater = () -> 
     {
@@ -30,6 +31,9 @@ public class MainWindow extends javax.swing.JFrame
             {
                 updateOnline();
                 updateRequests();
+                updateMe();
+                updateFriendsList();
+                updateInfoList();
                 Thread.sleep(2000);
             }
             catch (Exception e)
@@ -42,7 +46,7 @@ public class MainWindow extends javax.swing.JFrame
     public MainWindow() 
     {
         initComponents();
-        System.out.println("NO DATA");
+        System.err.println("NO DATA");
     }
     
     public MainWindow(String username, ClientTalker talker) 
@@ -53,14 +57,13 @@ public class MainWindow extends javax.swing.JFrame
         this.setTitle("Music Social Network - Logged in as: " + username);
         myTalker = talker;
         myData = myTalker.getUserdata(username);
-        
+        setupBoxes();
         new Thread(updater).start();
-        
     }
     
-    //Update online list
-    public void updateOnline()
+    public void setupBoxes()
     {
+        //Set up who's online
         onlineUsers = myTalker.clientGetUsers(1);
         DefaultListModel listModel = new DefaultListModel();
         for(int i = 0; i < onlineUsers.size(); i++)
@@ -68,17 +71,100 @@ public class MainWindow extends javax.swing.JFrame
             listModel.add(i,onlineUsers.get(i));
         }
         onlineList.setModel(listModel);
-    }
-    
-    public void updateRequests()
-    {
+        //Set up requests
         myRequests = myTalker.getRequests();
-        DefaultListModel listModel = new DefaultListModel();
+        listModel = new DefaultListModel();
         for(int i = 0; i < myRequests.size(); i++)
         {
             listModel.add(i,myRequests.get(i));
         }
         requestList.setModel(listModel);
+        //Set up friend requests
+        listModel = new DefaultListModel();       
+        for(int i = 0; i < myData.listOfFriends.size(); i++)
+        {
+            listModel.add(i,myData.listOfFriends.get(i));
+        }
+        friendList.setModel(listModel);
+    }
+    
+    //Update online list
+    public void updateOnline()
+    {
+        ArrayList<String> comparer = onlineUsers;
+        onlineUsers = myTalker.clientGetUsers(1);
+        if (!comparer.equals(onlineUsers))
+        {
+            DefaultListModel listModel = new DefaultListModel();
+            for(int i = 0; i < onlineUsers.size(); i++)
+            {
+                listModel.add(i,onlineUsers.get(i));
+            }
+            onlineList.setModel(listModel);
+        }
+    }
+    
+    public void updateRequests()
+    {
+        ArrayList<String> comparer = myRequests;
+        myRequests = myTalker.getRequests();
+        if (!myRequests.equals(comparer))
+        {
+            DefaultListModel listModel = new DefaultListModel();
+            for(int i = 0; i < myRequests.size(); i++)
+            {
+                listModel.add(i,myRequests.get(i));
+            }
+            requestList.setModel(listModel);
+        }
+    }
+    
+    public void updateMe()
+    {
+        myData = myTalker.getUserdata(myData.username);
+    }
+    
+    public void updateFriends()
+    {
+        myFriends.clear();
+        for (int i = 0; i < myData.listOfFriends.size(); i++)
+        {
+            myFriends.add(myData.listOfFriends.get(i));
+        }
+    }
+    
+    public void updateFriendsList()
+    {
+        ArrayList<String> comparer = myFriends;
+        updateFriends();
+        if (!comparer.equals(myFriends))
+        {
+            DefaultListModel listModel = new DefaultListModel();       
+            for(int i = 0; i < myFriends.size(); i++)
+            {
+                listModel.add(i,myFriends.get(i));
+            }
+            friendList.setModel(listModel);
+        }
+    }
+    
+    public void updateInfoList()
+    {
+        UserData displayData = null;
+        
+        if (friendList.getSelectedValue() != null)
+        {
+            DefaultListModel listModel = new DefaultListModel(); 
+            displayData = myTalker.getUserdata(friendList.getSelectedValue());
+            listModel.add(0,"Place of birth:" + displayData.placeOfBirth);
+            listModel.add(1,"Date of birth:" + displayData.dateOfBirth);
+            for(int i = 0; i < displayData.listOfTastes.size(); i++)
+            {
+                listModel.add(2+i,"Taste " + (i+1) + ": " + displayData.listOfTastes.get(i));
+            }
+            infoList.setModel(listModel);
+        }
+        
     }
     
     public void logOut()
@@ -115,8 +201,6 @@ public class MainWindow extends javax.swing.JFrame
         buttonPost = new javax.swing.JButton();
         buttonAddFriend = new javax.swing.JButton();
         buttonChat = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        infoList = new javax.swing.JTextArea();
         jScrollPane3 = new javax.swing.JScrollPane();
         songs = new javax.swing.JList<>();
         jScrollPane7 = new javax.swing.JScrollPane();
@@ -127,6 +211,8 @@ public class MainWindow extends javax.swing.JFrame
         jLabel9 = new javax.swing.JLabel();
         buttonPlay1 = new javax.swing.JButton();
         buttonLogout = new javax.swing.JButton();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        infoList = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -203,10 +289,6 @@ public class MainWindow extends javax.swing.JFrame
             }
         });
 
-        infoList.setColumns(20);
-        infoList.setRows(5);
-        jScrollPane2.setViewportView(infoList);
-
         jScrollPane3.setViewportView(songs);
 
         requestList.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -254,6 +336,9 @@ public class MainWindow extends javax.swing.JFrame
             }
         });
 
+        infoList.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jScrollPane5.setViewportView(infoList);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -272,9 +357,9 @@ public class MainWindow extends javax.swing.JFrame
                                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                                 .addGap(18, 18, 18)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
@@ -325,9 +410,10 @@ public class MainWindow extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -374,10 +460,18 @@ public class MainWindow extends javax.swing.JFrame
 
     private void buttonRejectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRejectActionPerformed
         // TODO add your handling code here:
+        if (requestList.getSelectedValue() != null)
+        {
+            myTalker.replyRequest(requestList.getSelectedValue(),false);
+        }
     }//GEN-LAST:event_buttonRejectActionPerformed
 
     private void buttonAcceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAcceptActionPerformed
         // TODO add your handling code here:
+        if (requestList.getSelectedValue() != null)
+        {
+            myTalker.replyRequest(requestList.getSelectedValue(),true);
+        }
     }//GEN-LAST:event_buttonAcceptActionPerformed
 
     private void buttonAddFriendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddFriendActionPerformed
@@ -457,7 +551,7 @@ public class MainWindow extends javax.swing.JFrame
     private javax.swing.JButton buttonReject;
     private javax.swing.JTextField fieldPost;
     private javax.swing.JList<String> friendList;
-    private javax.swing.JTextArea infoList;
+    private javax.swing.JList<String> infoList;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -468,9 +562,9 @@ public class MainWindow extends javax.swing.JFrame
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JList<String> onlineList;

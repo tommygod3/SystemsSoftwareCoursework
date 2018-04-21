@@ -68,7 +68,7 @@ public class ServerHandler implements Runnable
                 in = inFromClient.readObject();
                 dataU = (UserData) in;
             }
-            if ((command.equals("GETDATA")) || (command.equals("REQUESTFRIEND")))
+            if ((command.equals("GETDATA")) || (command.equals("REQUESTFRIEND")) || (command.equals("REPLYYES")) || (command.equals("REPLYNO")))
             {
                 in = inFromClient.readObject();
                 dataS = (String) in;
@@ -92,10 +92,6 @@ public class ServerHandler implements Runnable
        {
            sendUsers(1);
        }
-       if (command.equals("GETFRIENDS"))
-       {
-           sendUsers(2);
-       }
        if (command.equals("GETDATA"))
        {
            sendOneUser(dataS);
@@ -115,6 +111,14 @@ public class ServerHandler implements Runnable
        if (command.equals("GETREQUESTS"))
        {
            sendRequests();
+       }
+       if (command.equals("REPLYYES"))
+       {
+           replyRequest(dataS,true);
+       }
+       if (command.equals("REPLYNO"))
+       {
+           replyRequest(dataS,false);
        }
        return false;
     }
@@ -147,6 +151,80 @@ public class ServerHandler implements Runnable
         catch (Exception e)
         {
             System.err.println("Error writing request in: " + e.getMessage());
+        }
+    }
+    
+    public void replyRequest(String usernameToDo, Boolean accepted)
+    {
+        if (accepted)
+        {
+            addFriendToData(clientsData.username, usernameToDo);
+            addFriendToData(usernameToDo, clientsData.username);
+        }
+        try
+        {
+            File oldRequests = new File(fileNameRequests);
+            File tempRequests = new File("temprequests.txt");
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(oldRequests));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(tempRequests));
+            String userToRemove = usernameToDo;
+            String parser = bufferedReader.readLine();
+            while (parser != null)
+            {
+                String trimmed = parser.trim();
+                String[] line = trimmed.split(",");
+                if (line[1].equals(userToRemove))
+                {
+                    parser = bufferedReader.readLine();
+                    continue;
+                }
+                bufferedWriter.write(parser + System.getProperty("line.separator"));
+                parser = bufferedReader.readLine();
+            }
+            bufferedWriter.close();
+            bufferedReader.close();
+
+            oldRequests.delete();
+            tempRequests.renameTo(oldRequests);
+        }
+        catch (Exception e)
+        {
+            System.err.println("Error deleting requests: " +e.getMessage());
+        }
+    }
+    
+    public void addFriendToData(String username, String toAdd)
+    {
+        try
+        {
+            File oldData = new File(fileNameUserData);
+            File tempData = new File("tempuserdata.txt");
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(oldData));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(tempData));
+            String userAddTo = username;
+            String parser = bufferedReader.readLine();
+            while (parser != null)
+            {
+                String trimmed = parser.trim();
+                String[] line = trimmed.split(",");
+                if (line[1].equals(userAddTo))
+                {
+                    bufferedWriter.write(parser + toAdd + "," + System.getProperty("line.separator"));
+                    parser = bufferedReader.readLine();
+                    continue;
+                }
+                bufferedWriter.write(parser + System.getProperty("line.separator"));
+                parser = bufferedReader.readLine();
+            }
+            bufferedWriter.close();
+            bufferedReader.close();
+
+            oldData.delete();
+            tempData.renameTo(oldData);
+        }
+        catch (Exception e)
+        {
+            System.err.println("Error deleting requests: " +e.getMessage());
         }
     }
     
@@ -203,10 +281,6 @@ public class ServerHandler implements Runnable
         {
             usersToSend = onlineData;
         }
-        if (selection == 2)
-        {
-            //usersToSend = the users friends data...
-        }
         ArrayList<String> usernameSend = new ArrayList<>();
         for (int i = 0; i < usersToSend.size(); i++)
         {
@@ -241,24 +315,24 @@ public class ServerHandler implements Runnable
                 thisLine.password = dataLine[2];
                 thisLine.placeOfBirth = dataLine[3];
                 thisLine.dateOfBirth = dataLine[4];
-                if (dataLine.length > 5)
+                
+                int index = 5;
+               
+                while(dataLine.length > index)
                 {
-                    int index = 5;
-                    String taste = dataLine[index];
-                    while(taste.equals("Opera") || taste.equals("Rock") || taste.equals("Pop"))
+                    String next = dataLine[index];
+                    if (next.equals("Opera") || next.equals("Rock") || next.equals("Pop"))
                     {
-                        thisLine.listOfTastes.add(taste);
-                        index++;
-                        if(dataLine.length > index)
-                        {
-                            taste = dataLine[index];
-                        }
-                        else
-                        {
-                            break;
-                        }
+                        thisLine.listOfTastes.add(next);
                     }
+                    else
+                    {
+                        thisLine.listOfFriends.add(next);
+                    }
+                    
+                    index++;
                 }
+                
                 usersData.add(thisLine);
                 parser = bufferedReader.readLine();
             }
@@ -268,7 +342,6 @@ public class ServerHandler implements Runnable
         {
             System.err.println(e.getMessage());                
         }
-        
     }
     
     //Update online users from database, depends on all user data
