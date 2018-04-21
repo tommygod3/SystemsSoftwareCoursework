@@ -6,26 +6,33 @@ package coursework;
 import java.io.*;
 import java.util.*;
 import java.net.*;
+import javax.swing.*;
 
 public class MainWindow extends javax.swing.JFrame 
 {
-    public String myUsername = null;
-    public UserData myData = new UserData();
-    String reply = null;
-    public ArrayList<UserData> usersData = new ArrayList<>();
-    public ArrayList<UserData> onlineData = new ArrayList<>();
+    public ClientTalker myTalker;
+    public String myUsername;
+    public UserData myData;
+    Boolean running;
+    
+    public ArrayList<UserData> onlineUsersData = new ArrayList<>();
+    
     Runnable updater = () -> 
     {
         while(true)
         {
+            if(!running)
+            {
+                break;
+            }
             try
             {
-                updateOnlineData();
+                updateOnline();
                 Thread.sleep(2000);
             }
-            catch (InterruptedException e)
+            catch (Exception e)
             {
-                
+                System.err.println(e.getMessage());
             }
         }
     };
@@ -33,51 +40,50 @@ public class MainWindow extends javax.swing.JFrame
     public MainWindow() 
     {
         initComponents();
+        System.out.println("NO DATA");
     }
     
-    public MainWindow(String username) 
+    public MainWindow(String username, ClientTalker talker) 
     {
         initComponents();
+        myUsername = username;
+        running = true;
+        this.setTitle("Music Social Network - Logged in as: " + username);
+        myTalker = talker;
+        myData = myTalker.getUserdata(username);
+        
+        new Thread(updater).start();
+        
     }
     
     //Update online list
-    public void updateOnlineData()
+    public void updateOnline()
     {
-        /*
-        try
+        onlineUsersData = myTalker.clientGetUsers(1);
+        
+        DefaultListModel listModel = new DefaultListModel();
+        
+        
+        
+        for(int i = 0; i < onlineUsersData.size(); i++)
         {
-            outToServer.writeUTF("UPDATEONLINE");
-            ObjectInputStream in = new ObjectInputStream(server.getInputStream());
-            Object a = in.readObject();
-            ArrayList<UserData> b = (ArrayList<UserData>) a;
-            onlineData = b ;
+            listModel.add(i,onlineUsersData.get(i).username);
         }
-        catch (IOException e)
+        onlineList.setModel(listModel);
+        
+        /*onlineList.removeAll();
+        for(int i = 0; i < onlineUsersData.size(); i++)
         {
-            
-        }
-        catch (ClassNotFoundException n)
-        {
-            
+            onlineList.add(onlineUsersData.get(i).username, onlineUsersData.get(i));
         }*/
     }
     
 
-    public void logOut() throws IOException
-    {/*
-        outToServer.writeUTF("LOGOUT");
-        System.out.println("Logging out");
-        server.close();*/
-    }
-
-
-    public void setOnlineUsers(ArrayList<UserData> onlineUsers)
+    public void logOut()
     {
-        onlineList.removeAll();
-        for(int i = 0; i < onlineUsers.size(); i++)
-        {
-            onlineList.add(onlineUsers.get(i).username, this);
-        }
+        running = false;
+        myTalker.logOut();
+        System.out.println("Logging out");
     }
     
     /**
@@ -118,8 +124,14 @@ public class MainWindow extends javax.swing.JFrame
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         buttonPlay1 = new javax.swing.JButton();
+        buttonLogout = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setText("Friends");
@@ -231,6 +243,15 @@ public class MainWindow extends javax.swing.JFrame
             }
         });
 
+        buttonLogout.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        buttonLogout.setText("Logout");
+        buttonLogout.setPreferredSize(new java.awt.Dimension(70, 35));
+        buttonLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonLogoutActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -259,9 +280,9 @@ public class MainWindow extends javax.swing.JFrame
                             .addComponent(buttonAddFriend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(buttonAccept, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(buttonReject, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+                            .addComponent(buttonReject, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(buttonAccept, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -269,20 +290,22 @@ public class MainWindow extends javax.swing.JFrame
                         .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(buttonPlay, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(fieldPost, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(buttonPost, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(buttonPlay1, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(buttonPlay, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane3)
+                            .addComponent(jScrollPane4)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fieldPost, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(buttonPost, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(buttonPlay1, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(buttonLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap(47, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -335,7 +358,8 @@ public class MainWindow extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonAddFriend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(buttonReject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buttonPlay1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(buttonPlay1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buttonLogout, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -352,14 +376,6 @@ public class MainWindow extends javax.swing.JFrame
 
     private void buttonAcceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAcceptActionPerformed
         // TODO add your handling code here:
-        try
-        {
-            logOut();
-        }
-        catch (IOException e)
-        {
-            
-        }
     }//GEN-LAST:event_buttonAcceptActionPerformed
 
     private void buttonAddFriendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddFriendActionPerformed
@@ -377,6 +393,17 @@ public class MainWindow extends javax.swing.JFrame
     private void buttonPlay1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPlay1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_buttonPlay1ActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        logOut();
+    }//GEN-LAST:event_formWindowClosing
+
+    private void buttonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLogoutActionPerformed
+        // TODO add your handling code here:
+        logOut();
+        dispose();
+    }//GEN-LAST:event_buttonLogoutActionPerformed
 
     /**
      * @param args the command line arguments
@@ -417,6 +444,7 @@ public class MainWindow extends javax.swing.JFrame
     private javax.swing.JButton buttonAccept;
     private javax.swing.JButton buttonAddFriend;
     private javax.swing.JButton buttonChat;
+    private javax.swing.JButton buttonLogout;
     private javax.swing.JButton buttonPlay;
     private javax.swing.JButton buttonPlay1;
     private javax.swing.JButton buttonPost;

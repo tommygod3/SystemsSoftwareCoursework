@@ -1,9 +1,10 @@
 package coursework;
 
+import java.io.*;
 import java.util.*;
 import java.net.*;
 
-public class UserData 
+public class UserData implements Serializable
 {
     public InetAddress ip;
     public String username;

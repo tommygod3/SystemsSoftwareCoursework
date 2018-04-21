@@ -9,20 +9,104 @@ import java.util.*;
 
 public class ServerHandler implements Runnable
 {
-    String message = "";
     Socket client;
+    ObjectInputStream inFromClient;
+    ObjectOutputStream outToClient;
     public ArrayList<UserData> usersData = new ArrayList<>();
     public ArrayList<UserData> onlineData = new ArrayList<>();
-    UserData clientsData = new UserData();
+    UserData clientsData;
     String fileNameUserData = "userdata.txt";
     String fileNameOnlineUsers = "onlineusers.txt";
+    Runnable updater = () -> 
+    {
+        while(true)
+        {
+            try
+            {
+                updateReadData();
+                updateReadOnlineUsers();
+                Thread.sleep(2000);
+            }
+            catch (Exception e)
+            {
+                System.err.println(e.getMessage());
+            }
+        }
+    };
     
-    //Constructor that sets up input and output streams
-    //Also loads in users data
+    //Constructor sets up who client is and reads into data from file
     public ServerHandler(Socket c)
     {
         client = c;
+        try
+        {
+            inFromClient = new ObjectInputStream(client.getInputStream());
+            outToClient = new ObjectOutputStream(client.getOutputStream());
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
         updateReadData();
+    }
+    
+    //Takes input then does relevant function for output
+    public Boolean redirector()
+    {
+        String command = null;
+        UserData dataU = null;
+        String dataS = null;
+        Object in = null;
+        try
+        {
+            in = inFromClient.readObject();
+            command = (String) in;
+            if ((command.equals("REGISTER"))||(command.equals("LOGIN")))
+            {
+                in = inFromClient.readObject();
+                dataU = (UserData) in;
+            }
+            if (command.equals("GETDATA"))
+            {
+                in = inFromClient.readObject();
+                dataS = (String) in;
+            }
+            System.out.println("In from client " + client.getInetAddress() + ": " + command);
+        }
+        catch (Exception e)
+        {
+            System.err.println("Error with redirect message: " +e.getMessage());
+        }
+       if (command.equals("LOGOUT"))
+       {
+           logoutUser();
+           return true;
+       }
+       if (command.equals("GETALL"))
+       {
+           sendUsers(0);
+       }
+       if (command.equals("GETONLINE"))
+       {
+           sendUsers(1);
+       }
+       if (command.equals("GETFRIENDS"))
+       {
+           sendUsers(2);
+       }
+       if (command.equals("GETDATA"))
+       {
+           sendOneUser(dataS);
+       }
+       if (command.equals("LOGIN"))
+       {
+           loginClient(dataU);
+       }
+       if (command.equals("REGISTER"))
+       {
+           registerClient(dataU);
+       }
+       return false;
     }
     
     //Function to get user data from username
@@ -39,17 +123,43 @@ public class ServerHandler implements Runnable
         return found;
     }
     
-    //Send current online users
-    public void sendOnline()
+    public void sendOneUser(String username)
     {
+        UserData dataToSend = null;
         try
         {
-            ObjectOutputStream outObject = new ObjectOutputStream(client.getOutputStream());
-            outObject.writeObject(onlineData);
+            dataToSend = userSearch(username);
+            outToClient.writeObject(dataToSend);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-            
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    //Send list of users to client, 0 = all users, 1 = online
+    public void sendUsers(int selection)
+    {
+        ArrayList<UserData> usersToSend = new ArrayList<>();
+        if (selection == 0)
+        {
+            usersToSend = usersData;
+        }
+        if (selection == 1)
+        {
+            usersToSend = onlineData;
+        }
+        if (selection == 2)
+        {
+            //usersToSend = the users friends data...
+        }
+        try
+        {
+            outToClient.writeObject(usersToSend);
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
         }
     }
     
@@ -94,14 +204,11 @@ public class ServerHandler implements Runnable
             }
             bufferedReader.close();
         }
-        catch(FileNotFoundException e) 
+        catch(Exception e) 
         {
-            System.err.println("Unable to open file: " + fileNameUserData);                
+            System.err.println(e.getMessage());                
         }
-        catch(IOException e) 
-        {
-            System.err.println("Error reading file: "+ fileNameUserData);                  
-        }
+        
     }
     
     //Update online users from database, depends on all user data
@@ -123,13 +230,9 @@ public class ServerHandler implements Runnable
             }
             bufferedReader.close();
         }
-        catch(FileNotFoundException e) 
+        catch(Exception e) 
         {
-            System.err.println("Unable to open file: " + fileNameOnlineUsers);                
-        }
-        catch(IOException e) 
-        {
-            System.err.println("Error reading file: "+ fileNameOnlineUsers);                  
+            System.err.println(e.getMessage());              
         }
     }
     
@@ -148,9 +251,9 @@ public class ServerHandler implements Runnable
                 bufferedWriter.close();
                 updateReadOnlineUsers();
             }
-            catch (IOException e)
+            catch (Exception e)
             {
-                System.err.println("Unable to write to file " + fileNameOnlineUsers);
+                System.err.println("Error writing log in: " + e.getMessage());
             }
         }
         else
@@ -180,18 +283,84 @@ public class ServerHandler implements Runnable
                 oldOnline.delete();
                 tempOnline.renameTo(oldOnline);
             }
-            catch (IOException e)
+            catch (Exception e)
             {
-                System.err.println("Unable to write to file " + fileNameOnlineUsers);
+                System.err.println("Error writing log out: " +e.getMessage());
             }
         }
     }
     
     //Logs off current client connected
-    public void removeUser() throws IOException
+    public void logoutUser() 
     {
-        updateWriteOnlineUser(clientsData.username,false);
-        client.close();
+        try
+        {
+            int x = 10;
+            updateWriteOnlineUser(clientsData.username,false);
+            client.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println("Error logging out: " + e.getMessage());
+        }
+    }
+    
+    public void loginClient(UserData dataIn)
+    {
+        try
+        {
+            String usernameIn = dataIn.username;
+            String passwordIn = dataIn.password;
+            Boolean valid = false;
+            for (int i = 0; i < usersData.size(); i++)
+            {
+                if ((usersData.get(i).username.equals(usernameIn))&&(usersData.get(i).password.equals(passwordIn)&&(usersData.get(i).ip.equals(client.getInetAddress()))))
+                {
+                    valid = true;
+                }
+            }
+            if (valid == true)
+            {
+                outToClient.writeObject("SUCCESS");
+                updateWriteOnlineUser(usernameIn,true);
+                clientsData = userSearch(usernameIn);
+            }
+            else if (valid == false)
+            {
+                outToClient.writeObject("FAILURE");
+            }
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    public void registerClient(UserData dataIn)
+    {
+        try
+        {
+            FileWriter fileWriter = new FileWriter(fileNameUserData,true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(client.getInetAddress() + ",");
+            bufferedWriter.write(dataIn.username + ",");
+            bufferedWriter.write(dataIn.password + ",");
+            bufferedWriter.write(dataIn.placeOfBirth + ",");
+            bufferedWriter.write(dataIn.dateOfBirth + ",");
+            for(int i = 0; i < dataIn.listOfTastes.size(); i++)
+            {
+                bufferedWriter.write(dataIn.listOfTastes.get(i) + ",");
+            }
+            bufferedWriter.newLine(); 
+            outToClient.writeObject("SUCCESS"); 
+            bufferedWriter.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+        updateWriteOnlineUser(dataIn.username,true);
+        clientsData = userSearch(dataIn.username);
     }
     
     //Run function for multithreading
@@ -202,76 +371,14 @@ public class ServerHandler implements Runnable
         {
             try
             {
-            
-                message = inFromClient.readUTF();
-                System.out.println("In from client " + client.getInetAddress() + ": " + message);
-                if (message.equals("LOGOUT"))
+                if (redirector() == true)
                 {
-                    removeUser();
-                }
-                if (message.equals("REGISTER"))
-                {
-                    FileWriter fileWriter = new FileWriter(fileNameUserData,true);
-                    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-                    bufferedWriter.write(client.getInetAddress().getHostAddress() + ",");
-                    String registeredUsername = inFromClient.readUTF();
-                    bufferedWriter.write(registeredUsername + ",");
-                    bufferedWriter.write(inFromClient.readUTF() + ",");
-                    bufferedWriter.write(inFromClient.readUTF() + ",");
-                    bufferedWriter.write(inFromClient.readUTF() + ",");
-                    int numOfTastes = Integer.parseInt(inFromClient.readUTF());
-                    for (int i = 0; i < numOfTastes; i++)
-                    {
-                        bufferedWriter.write(inFromClient.readUTF() + ",");
-                    }
-                    bufferedWriter.newLine();
-                    outToClient.writeUTF("SUCCESS");
-                    bufferedWriter.close();
-                    updateReadData();
-                    updateWriteOnlineUser(registeredUsername,true);
-                    clientsData = userSearch(registeredUsername);
-                }
-                if (message.equals("LOGIN"))
-                {
-                    int valid = 0;
-                    InetAddress clientIP = client.getInetAddress();
-                    String logUsername = inFromClient.readUTF();
-                    String logPassword = inFromClient.readUTF();
-                    for (int i = 0; i < usersData.size(); i++)
-                    {
-                        if ((usersData.get(i).ip.equals(clientIP))&&(usersData.get(i).username.equals(logUsername))&&(usersData.get(i).password.equals(logPassword)))
-                        {
-                            valid = 1;
-                        }
-                    }
-                    if (valid == 1)
-                    {
-                        outToClient.writeUTF("SUCCESS");
-                        updateWriteOnlineUser(logUsername,true);
-                        clientsData = userSearch(logUsername);
-                    }
-                    else if (valid == 0)
-                    {
-                        outToClient.writeUTF("FAILURE");
-                    }
-                    updateReadData();
-                }
-                if (message.equals("UPDATEONLINE"))
-                {
-                    sendOnline();
+                    break;
                 }
             }
-            catch (IOException e)
+            catch (Exception e)
             {
-                System.err.println("Client " + client.getInetAddress() + " has disconnected");
-                try
-                {
-                    removeUser();
-                }
-                catch (IOException w)
-                {
-                    System.err.println("Client " + client.getInetAddress() + " already disconnected");
-                }
+                System.err.println("Error redirecting: " +e.getMessage());
                 break;
             } 
         }

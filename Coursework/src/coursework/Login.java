@@ -10,62 +10,46 @@ import java.net.*;
 public class Login extends javax.swing.JFrame 
 {
     public UserData inData;
-    ClientTalker myTalker;
+    public ClientTalker myTalker;
     
     public Login()
     {
         initComponents();
+        this.setTitle("Music Social Network - Login/Register");
+        myTalker = new ClientTalker();
         inData = new UserData();
-        try
-        {
-            inData.ip = InetAddress.getLocalHost();
-        }
-        catch (Exception e)
-        {
-            System.err.println(e.getMessage());
-        }
     }
     
-    public void registering() 
+    public void registering(Boolean existing) 
     {
-        System.out.println("Attempting to make new user: " + inData.username);
-        if (myTalker.clientRegister(inData,false) == true)
+        if (existing)
         {
-            System.out.println("New user made: " + inData.username);
-            new MainWindow(inData.username).setVisible(true);
+            System.out.println("Attempting to log in as " + inData.username);
         }
         else
         {
-            System.out.println("Failed to make new user: " + inData.username);
+            System.out.println("Attempting to make new user " + inData.username);
         }
-    }
-    
-    public Boolean loggingIn()
-    {
-        /*
-        System.out.println("Attempting to log in as: " + inData.username);
-        try
+        if (myTalker.clientRegister(inData,existing) == true)
         {
-            outToServer.writeUTF("LOGIN");
-            outToServer.writeUTF(myData.username);
-            outToServer.writeUTF(myData.password);
-            reply = inFromServer.readUTF();
+            if (!existing)
+            {
+                System.out.println("User " + inData.username + " created");
+            }
+            System.out.println("Logged in as " + inData.username);
+            new MainWindow(inData.username, myTalker).setVisible(true);
         }
-        catch (IOException e)
+        else
         {
+            if (existing)
+            {
+                System.out.println("Failed to log in as " + inData.username);
+            }
+            else
+            {
+                System.out.println("Failed to make new user " + inData.username);
+            }
         }
-        
-        if(reply.equals("SUCCESS"))
-        {
-            
-            System.out.println("Logged in as " + myData.username);
-            return true;
-        }
-        if(reply.equals("FAILURE"))
-        {
-            System.out.println("Failed to log in");
-        }*/
-        return false;
     }
 
     /**
@@ -108,6 +92,7 @@ public class Login extends javax.swing.JFrame
         jLabel2.setText("Login");
 
         fieldLoginUsername.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        fieldLoginUsername.setNextFocusableComponent(fieldLoginPassword);
         fieldLoginUsername.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 fieldLoginUsernameFocusLost(evt);
@@ -129,6 +114,7 @@ public class Login extends javax.swing.JFrame
         jLabel7.setText("Username");
 
         fieldRegisterUsername.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        fieldRegisterUsername.setNextFocusableComponent(fieldRegisterPassword);
         fieldRegisterUsername.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 fieldRegisterUsernameFocusLost(evt);
@@ -185,6 +171,7 @@ public class Login extends javax.swing.JFrame
         jLabel11.setText("Date of Birth");
 
         fieldRegisterDateOfBirth.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        fieldRegisterDateOfBirth.setNextFocusableComponent(buttonRegister);
         fieldRegisterDateOfBirth.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 fieldRegisterDateOfBirthFocusLost(evt);
@@ -213,8 +200,10 @@ public class Login extends javax.swing.JFrame
         });
 
         fieldLoginPassword.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        fieldLoginPassword.setNextFocusableComponent(buttonLogin);
 
         fieldRegisterPassword.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        fieldRegisterPassword.setNextFocusableComponent(fieldRegisterPlaceOfBirth);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -332,8 +321,11 @@ public class Login extends javax.swing.JFrame
 
     private void buttonAddGenreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddGenreActionPerformed
         // TODO add your handling code here:
-        inData.listOfTastes.add(comboBoxTastes.getSelectedItem().toString());
-        areaTastes.append(comboBoxTastes.getSelectedItem().toString() + "\n");
+        if (!inData.listOfTastes.contains(comboBoxTastes.getSelectedItem().toString()))
+        {
+            inData.listOfTastes.add(comboBoxTastes.getSelectedItem().toString());
+            areaTastes.append(comboBoxTastes.getSelectedItem().toString() + "\n");
+        }
     }//GEN-LAST:event_buttonAddGenreActionPerformed
 
     private void fieldRegisterPlaceOfBirthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldRegisterPlaceOfBirthActionPerformed
@@ -349,7 +341,7 @@ public class Login extends javax.swing.JFrame
         inData.username = fieldLoginUsername.getText();
         String pass = new String(fieldLoginPassword.getPassword());
         inData.password = pass;
-        loggingIn();
+        registering(true);
         dispose();
     }//GEN-LAST:event_buttonLoginActionPerformed
 
@@ -360,7 +352,7 @@ public class Login extends javax.swing.JFrame
         inData.password = pass;
         inData.placeOfBirth = fieldRegisterPlaceOfBirth.getText();
         inData.dateOfBirth = fieldRegisterDateOfBirth.getText();
-        registering();
+        registering(false);
         dispose();
     }//GEN-LAST:event_buttonRegisterActionPerformed
 
