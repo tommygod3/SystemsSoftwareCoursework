@@ -530,7 +530,8 @@ public class ServerHandler implements Runnable
         {
             FileWriter fileWriter = new FileWriter(fileNameUserData,true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(client.getInetAddress() + ",");
+            dataIn.ip = client.getInetAddress();
+            bufferedWriter.write(dataIn.ip.getHostAddress() + ",");
             bufferedWriter.write(dataIn.username + ",");
             bufferedWriter.write(dataIn.password + ",");
             bufferedWriter.write(dataIn.placeOfBirth + ",");
@@ -547,6 +548,7 @@ public class ServerHandler implements Runnable
         {
             System.err.println(e.getMessage());
         }
+        updateReadData();
         updateWriteOnlineUser(dataIn.username,true);
         clientsData = userSearch(dataIn.username);
     }
