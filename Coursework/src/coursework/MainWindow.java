@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class MainWindow extends javax.swing.JFrame 
 {
@@ -190,6 +191,23 @@ public class MainWindow extends javax.swing.JFrame
             infoList.setModel(listModel);
         }
         
+    }
+    
+    public void chooseFile()
+    {
+        JFileChooser chooser = new JFileChooser();
+        String path = null;
+        String name = null;
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("MP3 FILES", "mp3");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.APPROVE_OPTION) 
+        {
+            System.out.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
+            path = chooser.getSelectedFile().getAbsolutePath();
+            name = chooser.getSelectedFile().getName();
+        }
+        myTalker.sendSong(name,path);
     }
     
     public void logOut()
@@ -523,6 +541,7 @@ public class MainWindow extends javax.swing.JFrame
 
     private void buttonPlay1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPlay1ActionPerformed
         // TODO add your handling code here:
+        chooseFile();
     }//GEN-LAST:event_buttonPlay1ActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing

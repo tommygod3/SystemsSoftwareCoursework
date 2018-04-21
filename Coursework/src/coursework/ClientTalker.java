@@ -24,6 +24,50 @@ public class ClientTalker
         }
     }
     
+    public void sendSong(String filename, String path)
+    {
+        try
+        {
+            
+            //Send file
+            File myFile = new File(path);
+            byte[] mybytearray = new byte[(int) myFile.length()];
+
+            FileInputStream fis = new FileInputStream(myFile);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            //bis.read(mybytearray, 0, mybytearray.length);
+
+            DataInputStream dis = new DataInputStream(bis);   
+            dis.readFully(mybytearray, 0, mybytearray.length);
+
+            
+
+            //Sending file name and file size to the server
+            outToServer.writeObject("SENDSONG");
+            outToServer.writeObject(filename);
+            
+            OutputStream os = server.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(os);   
+            dos.writeLong(mybytearray.length);
+            dos.write(mybytearray, 0, mybytearray.length);   
+            dos.flush();
+            dos.close();
+            //Sending file data to the server
+            os.write(mybytearray, 0, mybytearray.length);
+            fis.close();
+            dis.close();
+            bis.close();
+            os.flush();
+            os.close();
+            
+           
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+    
     //Tell server client is logging out
     public void logOut()
     {

@@ -69,7 +69,7 @@ public class ServerHandler implements Runnable
                 in = inFromClient.readObject();
                 dataU = (UserData) in;
             }
-            if ((command.equals("GETDATA")) || (command.equals("REQUESTFRIEND")) || (command.equals("REPLYYES")) || (command.equals("REPLYNO")) || (command.equals("MAKEPOST")))
+            if ((command.equals("GETDATA")) || (command.equals("REQUESTFRIEND")) || (command.equals("REPLYYES")) || (command.equals("REPLYNO")) || (command.equals("MAKEPOST")) || (command.equals("SENDSONG")))
             {
                 in = inFromClient.readObject();
                 dataS = (String) in;
@@ -129,7 +129,43 @@ public class ServerHandler implements Runnable
        {
            sendPosts();
        }
+       if (command.equals("SENDSONG"))
+       {
+           downloadSong(dataS);
+       }
        return false;
+    }
+    
+    public void downloadSong(String filename)
+    {
+        try
+        {
+            
+            int bytesRead;
+            int current = 0;
+            InputStream in = client.getInputStream();
+
+            DataInputStream clientData = new DataInputStream(in);
+            OutputStream output = new FileOutputStream("music\\" + filename);   
+            long size = clientData.readLong();   
+            byte[] buffer = new byte[1024];   
+            while (size > 0 && (bytesRead = clientData.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1)   
+            {   
+                output.write(buffer, 0, bytesRead);   
+                size -= bytesRead;   
+            }
+
+            // Closing the FileOutputStream handle
+            clientData.close();
+            in.close();
+            output.close();
+            
+            
+        }
+        catch (Exception e)
+        {
+            System.err.println("Error writing request in: " + e.getMessage());
+        }
     }
     
     //Function to get user data from username
