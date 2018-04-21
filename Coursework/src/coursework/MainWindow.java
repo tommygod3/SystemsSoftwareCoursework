@@ -60,22 +60,12 @@ public class MainWindow extends javax.swing.JFrame
     public void updateOnline()
     {
         onlineUsersData = myTalker.clientGetUsers(1);
-        
         DefaultListModel listModel = new DefaultListModel();
-        
-        
-        
         for(int i = 0; i < onlineUsersData.size(); i++)
         {
             listModel.add(i,onlineUsersData.get(i).username);
         }
         onlineList.setModel(listModel);
-        
-        /*onlineList.removeAll();
-        for(int i = 0; i < onlineUsersData.size(); i++)
-        {
-            onlineList.add(onlineUsersData.get(i).username, onlineUsersData.get(i));
-        }*/
     }
     
 
