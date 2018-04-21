@@ -18,6 +18,7 @@ public class MainWindow extends javax.swing.JFrame
     public ArrayList<String> onlineUsers = new ArrayList<>();
     public ArrayList<String> myRequests = new ArrayList<>();
     public ArrayList<String> myFriends = new ArrayList<>();
+    public ArrayList<String> visiblePosts = new ArrayList<>();
     
     Runnable updater = () -> 
     {
@@ -34,6 +35,7 @@ public class MainWindow extends javax.swing.JFrame
                 updateMe();
                 updateFriendsList();
                 updateInfoList();
+                updatePosts();
                 Thread.sleep(2000);
             }
             catch (Exception e)
@@ -63,7 +65,7 @@ public class MainWindow extends javax.swing.JFrame
     
     public void setupBoxes()
     {
-        //Set up who's online
+        //Set up online list
         onlineUsers = myTalker.clientGetUsers(1);
         DefaultListModel listModel = new DefaultListModel();
         for(int i = 0; i < onlineUsers.size(); i++)
@@ -71,7 +73,7 @@ public class MainWindow extends javax.swing.JFrame
             listModel.add(i,onlineUsers.get(i));
         }
         onlineList.setModel(listModel);
-        //Set up requests
+        //Set up requests list
         myRequests = myTalker.getRequests();
         listModel = new DefaultListModel();
         for(int i = 0; i < myRequests.size(); i++)
@@ -79,13 +81,36 @@ public class MainWindow extends javax.swing.JFrame
             listModel.add(i,myRequests.get(i));
         }
         requestList.setModel(listModel);
-        //Set up friend requests
+        //Set up friends list
+        updateFriends();
         listModel = new DefaultListModel();       
         for(int i = 0; i < myData.listOfFriends.size(); i++)
         {
             listModel.add(i,myData.listOfFriends.get(i));
         }
         friendList.setModel(listModel);
+        //Set up posts
+        visiblePosts = myTalker.getPosts();
+        for (int i = 0; i < visiblePosts.size(); i++)
+        {
+            String[] post = visiblePosts.get(i).split(",");
+            postsArea.append(post[0] + ": " + post[1] + "\n");
+        }
+    }
+    
+    //Update posts
+    public void updatePosts()
+    {
+        ArrayList<String> comparer = visiblePosts;
+        visiblePosts = myTalker.getPosts();
+        if (!comparer.equals(visiblePosts))
+        {
+            for(int i = comparer.size(); i < visiblePosts.size(); i++)
+            {
+                String[] post = visiblePosts.get(i).split(",");
+                postsArea.append(post[0] + ": " + post[1] + "\n");
+            }
+        }
     }
     
     //Update online list
@@ -192,7 +217,7 @@ public class MainWindow extends javax.swing.JFrame
         jScrollPane1 = new javax.swing.JScrollPane();
         friendList = new javax.swing.JList<>();
         jScrollPane4 = new javax.swing.JScrollPane();
-        posts = new javax.swing.JTextArea();
+        postsArea = new javax.swing.JTextArea();
         fieldPost = new javax.swing.JTextField();
         jScrollPane6 = new javax.swing.JScrollPane();
         onlineList = new javax.swing.JList<>();
@@ -242,9 +267,10 @@ public class MainWindow extends javax.swing.JFrame
         friendList.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jScrollPane1.setViewportView(friendList);
 
-        posts.setColumns(20);
-        posts.setRows(5);
-        jScrollPane4.setViewportView(posts);
+        postsArea.setEditable(false);
+        postsArea.setColumns(20);
+        postsArea.setRows(5);
+        jScrollPane4.setViewportView(postsArea);
 
         onlineList.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jScrollPane6.setViewportView(onlineList);
@@ -488,6 +514,11 @@ public class MainWindow extends javax.swing.JFrame
 
     private void buttonPostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPostActionPerformed
         // TODO add your handling code here:
+        if (fieldPost.getText() != null)
+        {
+            myTalker.makePost(fieldPost.getText());
+            fieldPost.setText("");
+        }
     }//GEN-LAST:event_buttonPostActionPerformed
 
     private void buttonPlay1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPlay1ActionPerformed
@@ -568,7 +599,7 @@ public class MainWindow extends javax.swing.JFrame
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JList<String> onlineList;
-    private javax.swing.JTextArea posts;
+    private javax.swing.JTextArea postsArea;
     private javax.swing.JList<String> requestList;
     private javax.swing.JList<String> songs;
     // End of variables declaration//GEN-END:variables

@@ -156,6 +156,36 @@ public class ClientTalker
         }
     }
     
+    public void makePost(String post)
+    {
+        try
+        {
+            outToServer.writeObject("MAKEPOST");
+            outToServer.writeObject(post);
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    public ArrayList<String> getPosts()
+    {
+        ArrayList<String> posts = null;
+        Object in = null;
+        try
+        {
+            outToServer.writeObject("GETPOSTS");
+            in = inFromServer.readObject();
+            posts = (ArrayList<String>) in;
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+        return posts;
+    }
+    
     public ArrayList<String> getRequests()
     {
         ArrayList<String> requests = null;

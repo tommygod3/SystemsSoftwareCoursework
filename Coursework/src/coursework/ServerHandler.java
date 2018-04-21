@@ -18,6 +18,7 @@ public class ServerHandler implements Runnable
     String fileNameUserData = "userdata.txt";
     String fileNameOnlineUsers = "onlineusers.txt";
     String fileNameRequests = "friendrequests.txt";
+    String fileNamePosts = "posts.txt";
     Runnable updater = () -> 
     {
         while(true)
@@ -68,7 +69,7 @@ public class ServerHandler implements Runnable
                 in = inFromClient.readObject();
                 dataU = (UserData) in;
             }
-            if ((command.equals("GETDATA")) || (command.equals("REQUESTFRIEND")) || (command.equals("REPLYYES")) || (command.equals("REPLYNO")))
+            if ((command.equals("GETDATA")) || (command.equals("REQUESTFRIEND")) || (command.equals("REPLYYES")) || (command.equals("REPLYNO")) || (command.equals("MAKEPOST")))
             {
                 in = inFromClient.readObject();
                 dataS = (String) in;
@@ -119,6 +120,14 @@ public class ServerHandler implements Runnable
        if (command.equals("REPLYNO"))
        {
            replyRequest(dataS,false);
+       }
+       if (command.equals("MAKEPOST"))
+       {
+           makePost(dataS);
+       }
+       if (command.equals("GETPOSTS"))
+       {
+           sendPosts();
        }
        return false;
     }
@@ -247,6 +256,50 @@ public class ServerHandler implements Runnable
                 parser = bufferedReader.readLine();
             }
             outToClient.writeObject(requests);
+            bufferedReader.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    public void makePost(String post)
+    {
+        try
+        {
+            FileWriter fileWriter = new FileWriter(fileNamePosts, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(clientsData.username + "," + post);
+            bufferedWriter.newLine();
+            bufferedWriter.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println("Error writing post: " + e.getMessage());
+        }
+    }
+    
+    public void sendPosts()
+    {
+        ArrayList<String> posts = new ArrayList<>();
+        String parser = null;
+        try
+        {
+            FileReader fileReader = new FileReader(fileNamePosts);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            parser = bufferedReader.readLine();
+            while (parser != null)
+            {
+                String[] lineSplit = parser.split(",");
+                
+                if (lineSplit[0].equals(clientsData.username) || (clientsData.listOfFriends.contains(lineSplit[0])))
+                {
+                    posts.add(lineSplit[0] + "," + lineSplit[1]);
+                }
+                parser = bufferedReader.readLine();
+            }
+            outToClient.writeObject(posts);
             bufferedReader.close();
         }
         catch (Exception e)
