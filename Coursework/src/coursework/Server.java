@@ -10,14 +10,15 @@ public class Server
 {
     public static void main(String[] args) throws IOException
     {
-        ServerSocket server = new ServerSocket(9090);
+        int port = 9090;
+        ServerSocket server = new ServerSocket(port);
         ServerGUI gui = new ServerGUI();
         gui.setVisible(true);
         while (true)
         {
             //Wait for clients to connect
-            System.out.println("Waiting...");
-            gui.display("Waiting...");
+            System.out.println("Waiting for client on port " + port + "...");
+            gui.display("Waiting for client on port " + port + "...");
             Socket client = server.accept();
             //Client connected, inform and show address
             System.out.println("Connected to " + client.getInetAddress());
