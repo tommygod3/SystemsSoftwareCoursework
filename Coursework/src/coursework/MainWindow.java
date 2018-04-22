@@ -135,7 +135,7 @@ public class MainWindow extends javax.swing.JFrame
             DefaultListModel listModel = new DefaultListModel();
             for(int i = 0; i < visibleSongs.size(); i++)
             {
-                String[] song = visiblePosts.get(i).split(",");
+                String[] song = visibleSongs.get(i).split(",");
                 listModel.add(i,song[0] + ": " + song[1]);
             }
             songsArea.setModel(listModel);
