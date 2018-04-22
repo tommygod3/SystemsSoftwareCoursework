@@ -566,7 +566,6 @@ public class ServerHandler implements Runnable
     {
         try
         {
-            int x = 10;
             updateWriteOnlineUser(clientsData.username,false);
             client.close();
         }

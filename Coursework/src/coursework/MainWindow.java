@@ -542,6 +542,17 @@ public class MainWindow extends javax.swing.JFrame
 
     private void buttonChatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChatActionPerformed
         // TODO add your handling code here:
+        Runnable chatSession = () -> 
+        {
+            if (onlineList.getSelectedValue() != null)
+            {
+                UserData friend = myTalker.getUserdata(onlineList.getSelectedValue());
+                ClientChatter chatter = new ClientChatter(myData,friend);
+                new ChatWindow(chatter).setVisible(true);
+            }
+        };
+        new Thread(chatSession).start();
+        
     }//GEN-LAST:event_buttonChatActionPerformed
 
     private void buttonRejectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRejectActionPerformed

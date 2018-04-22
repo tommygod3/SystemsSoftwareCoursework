@@ -1,3 +1,6 @@
+/*
+ * @author Tommy Godfrey, Tyler Knowles
+ */
 package coursework;
 
 import java.io.*;
@@ -10,12 +13,13 @@ public class ClientTalker
     Socket server;
     ObjectOutputStream outToServer;
     ObjectInputStream inFromServer;
+    int serverKnowPort = 9090;
     
     public ClientTalker()
     {
         try
         {
-            server = new Socket("localhost",9090);
+            server = new Socket("localhost",serverKnowPort);
             outToServer = new ObjectOutputStream(server.getOutputStream());
             inFromServer = new ObjectInputStream(server.getInputStream());
         }

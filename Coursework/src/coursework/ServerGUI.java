@@ -27,6 +27,7 @@ public class ServerGUI extends javax.swing.JFrame
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        log.setEditable(false);
         log.setColumns(20);
         log.setRows(5);
         jScrollPane1.setViewportView(log);
