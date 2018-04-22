@@ -8,6 +8,7 @@ import java.util.*;
 import java.net.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javazoom.jl.player.Player;
 
 public class MainWindow extends javax.swing.JFrame 
 {
@@ -20,6 +21,7 @@ public class MainWindow extends javax.swing.JFrame
     public ArrayList<String> myRequests = new ArrayList<>();
     public ArrayList<String> myFriends = new ArrayList<>();
     public ArrayList<String> visiblePosts = new ArrayList<>();
+    public ArrayList<String> visibleSongs = new ArrayList<>();
     
     Runnable updater = () -> 
     {
@@ -37,6 +39,7 @@ public class MainWindow extends javax.swing.JFrame
                 updateFriendsList();
                 updateInfoList();
                 updatePosts();
+                updateSongs();
                 Thread.sleep(2000);
             }
             catch (Exception e)
@@ -97,6 +100,15 @@ public class MainWindow extends javax.swing.JFrame
             String[] post = visiblePosts.get(i).split(",");
             postsArea.append(post[0] + ": " + post[1] + "\n");
         }
+        //Set up songs
+        visibleSongs = myTalker.getSongs();
+        listModel = new DefaultListModel();       
+        for(int i = 0; i < visibleSongs.size(); i++)
+        {
+            String[] song = visibleSongs.get(i).split(",");
+            listModel.add(i,song[0] + ": " + song[1]);
+        }
+        songsArea.setModel(listModel);
     }
     
     //Update posts
@@ -111,6 +123,22 @@ public class MainWindow extends javax.swing.JFrame
                 String[] post = visiblePosts.get(i).split(",");
                 postsArea.append(post[0] + ": " + post[1] + "\n");
             }
+        }
+    }
+    
+    public void updateSongs()
+    {
+        ArrayList<String> comparer = visibleSongs;
+        visibleSongs = myTalker.getSongs();
+        if (!comparer.equals(visibleSongs))
+        {
+            DefaultListModel listModel = new DefaultListModel();
+            for(int i = 0; i < visibleSongs.size(); i++)
+            {
+                String[] song = visiblePosts.get(i).split(",");
+                listModel.add(i,song[0] + ": " + song[1]);
+            }
+            songsArea.setModel(listModel);
         }
     }
     
@@ -189,8 +217,23 @@ public class MainWindow extends javax.swing.JFrame
                 listModel.add(2+i,"Taste " + (i+1) + ": " + displayData.listOfTastes.get(i));
             }
             infoList.setModel(listModel);
+        }   
+    }
+    
+    public void playSong(String songname)
+    {
+        try
+        {
+            FileOutputStream songWriter = new FileOutputStream(myData.username + songname);
+            songWriter.write(myTalker.getSong(songname));
+            FileInputStream fis = new FileInputStream(myData.username + songname);
+            Player playMP3 = new Player(fis);
+            playMP3.play();
         }
-        
+        catch(Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
     }
     
     public void chooseFile()
@@ -203,7 +246,6 @@ public class MainWindow extends javax.swing.JFrame
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.APPROVE_OPTION) 
         {
-            System.out.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
             path = chooser.getSelectedFile().getAbsolutePath();
             name = chooser.getSelectedFile().getName();
         }
@@ -245,7 +287,7 @@ public class MainWindow extends javax.swing.JFrame
         buttonAddFriend = new javax.swing.JButton();
         buttonChat = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        songs = new javax.swing.JList<>();
+        songsArea = new javax.swing.JList<>();
         jScrollPane7 = new javax.swing.JScrollPane();
         requestList = new javax.swing.JList<>();
         buttonAccept = new javax.swing.JButton();
@@ -333,7 +375,7 @@ public class MainWindow extends javax.swing.JFrame
             }
         });
 
-        jScrollPane3.setViewportView(songs);
+        jScrollPane3.setViewportView(songsArea);
 
         requestList.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jScrollPane7.setViewportView(requestList);
@@ -527,7 +569,16 @@ public class MainWindow extends javax.swing.JFrame
     }//GEN-LAST:event_buttonAddFriendActionPerformed
 
     private void buttonPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPlayActionPerformed
-        // TODO add your handling code here:
+        Runnable songThread = () -> 
+        {
+            if (songsArea.getSelectedValue() != null)
+            {
+                String[] songLine = songsArea.getSelectedValue().split(": ");
+                String songname = songLine[1];
+                playSong(songname);
+            }
+        };
+        new Thread(songThread).start();
     }//GEN-LAST:event_buttonPlayActionPerformed
 
     private void buttonPostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPostActionPerformed
@@ -620,6 +671,6 @@ public class MainWindow extends javax.swing.JFrame
     private javax.swing.JList<String> onlineList;
     private javax.swing.JTextArea postsArea;
     private javax.swing.JList<String> requestList;
-    private javax.swing.JList<String> songs;
+    private javax.swing.JList<String> songsArea;
     // End of variables declaration//GEN-END:variables
 }

@@ -5,6 +5,7 @@ package coursework;
 
 import java.net.*;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 public class ServerHandler implements Runnable
@@ -18,6 +19,7 @@ public class ServerHandler implements Runnable
     String fileNameUserData = "userdata.txt";
     String fileNameOnlineUsers = "onlineusers.txt";
     String fileNameRequests = "friendrequests.txt";
+    String fileNameSongs = "music.txt";
     String fileNamePosts = "posts.txt";
     Runnable updater = () -> 
     {
@@ -59,6 +61,7 @@ public class ServerHandler implements Runnable
         String command = null;
         UserData dataU = null;
         String dataS = null;
+        byte[] dataB = null;
         Object in = null;
         try
         {
@@ -69,10 +72,15 @@ public class ServerHandler implements Runnable
                 in = inFromClient.readObject();
                 dataU = (UserData) in;
             }
-            if ((command.equals("GETDATA")) || (command.equals("REQUESTFRIEND")) || (command.equals("REPLYYES")) || (command.equals("REPLYNO")) || (command.equals("MAKEPOST")) || (command.equals("SENDSONG")))
+            if ((command.equals("GETDATA")) || (command.equals("REQUESTFRIEND")) || (command.equals("REPLYYES")) || (command.equals("REPLYNO")) || (command.equals("MAKEPOST")) || (command.equals("SENDSONG")) || (command.equals("GETSONG")))
             {
                 in = inFromClient.readObject();
                 dataS = (String) in;
+                if (command.equals("SENDSONG"))
+                {
+                    in = inFromClient.readObject();
+                    dataB = (byte[]) in;
+                }
             }
             System.out.println("In from client " + client.getInetAddress() + ": " + command);
         }
@@ -131,36 +139,31 @@ public class ServerHandler implements Runnable
        }
        if (command.equals("SENDSONG"))
        {
-           downloadSong(dataS);
+           downloadSong(dataS,dataB);
+       }
+       if (command.equals("GETSONGS"))
+       {
+           sendSongs();
+       }
+       if (command.equals("GETSONG"))
+       {
+           sendSong(dataS);
        }
        return false;
     }
     
-    public void downloadSong(String filename)
+    public void downloadSong(String songname, byte[] data)
     {
         try
         {
-            
-            int bytesRead;
-            int current = 0;
-            InputStream in = client.getInputStream();
-
-            DataInputStream clientData = new DataInputStream(in);
-            OutputStream output = new FileOutputStream("music\\" + filename);   
-            long size = clientData.readLong();   
-            byte[] buffer = new byte[1024];   
-            while (size > 0 && (bytesRead = clientData.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1)   
-            {   
-                output.write(buffer, 0, bytesRead);   
-                size -= bytesRead;   
-            }
-
-            // Closing the FileOutputStream handle
-            clientData.close();
-            in.close();
-            output.close();
-            
-            
+            FileOutputStream songWriter = new FileOutputStream("music/" + songname);
+            songWriter.write(data);
+            songWriter.close();
+            FileWriter fileWriter = new FileWriter(fileNameSongs, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(clientsData.username + "," + songname);
+            bufferedWriter.newLine();
+            bufferedWriter.close();
         }
         catch (Exception e)
         {
@@ -298,6 +301,50 @@ public class ServerHandler implements Runnable
         {
             System.err.println(e.getMessage());
         }
+    }
+    
+    public void sendSongs()
+    {
+        ArrayList<String> songs = new ArrayList<>();
+        String parser = null;
+        try
+        {
+            FileReader fileReader = new FileReader(fileNameSongs);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            parser = bufferedReader.readLine();
+            while (parser != null)
+            {
+                String[] lineSplit = parser.split(",");
+                
+                if (lineSplit[0].equals(clientsData.username) || (clientsData.listOfFriends.contains(lineSplit[0])))
+                {
+                    songs.add(lineSplit[0] + "," + lineSplit[1]);
+                }
+                parser = bufferedReader.readLine();
+            }
+            outToClient.writeObject(songs);
+            bufferedReader.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    public void sendSong(String songName)
+    {
+        File myFile = new File("music/"+songName);
+        byte[] toSend = null;
+        try
+        {
+            toSend = Files.readAllBytes(myFile.toPath());
+            outToClient.writeObject(toSend);
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+        
     }
     
     public void makePost(String post)
