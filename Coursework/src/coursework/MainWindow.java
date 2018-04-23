@@ -180,11 +180,8 @@ public class MainWindow extends javax.swing.JFrame
     
     public void updateFriends()
     {
-        myFriends.clear();
-        for (int i = 0; i < myData.listOfFriends.size(); i++)
-        {
-            myFriends.add(myData.listOfFriends.get(i));
-        }
+        updateMe();
+        myFriends = myData.listOfFriends;
     }
     
     public void updateFriendsList()
