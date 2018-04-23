@@ -420,7 +420,10 @@ public class ServerHandler implements Runnable
         ArrayList<String> usernameSend = new ArrayList<>();
         for (int i = 0; i < usersToSend.size(); i++)
         {
-            usernameSend.add(usersToSend.get(i).username);
+            if (!usersToSend.get(i).username.equals(clientsData.username))
+            {
+                usernameSend.add(usersToSend.get(i).username);
+            }   
         }
         try
         {

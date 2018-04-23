@@ -33,7 +33,7 @@ public class MainWindow extends javax.swing.JFrame
             }
             try
             {
-                updateOnline();
+                updateOnline(false);
                 updateRequests();
                 updateMe();
                 updateFriendsList();
@@ -74,7 +74,14 @@ public class MainWindow extends javax.swing.JFrame
         DefaultListModel listModel = new DefaultListModel();
         for(int i = 0; i < onlineUsers.size(); i++)
         {
-            listModel.add(i,onlineUsers.get(i));
+            if (myData.listOfFriends.contains(onlineUsers.get(i)))
+            {
+                listModel.add(i,onlineUsers.get(i) + " (friend)");
+            }
+            else
+            {
+                listModel.add(i,onlineUsers.get(i));
+            }
         }
         onlineList.setModel(listModel);
         //Set up requests list
@@ -90,7 +97,14 @@ public class MainWindow extends javax.swing.JFrame
         listModel = new DefaultListModel();       
         for(int i = 0; i < myData.listOfFriends.size(); i++)
         {
-            listModel.add(i,myData.listOfFriends.get(i));
+            if (onlineUsers.contains(myFriends.get(i)))
+            {
+                listModel.add(i,myFriends.get(i) + " (online)");
+            }
+            else
+            {
+                listModel.add(i,myFriends.get(i) + " (offline)");
+            }
         }
         friendList.setModel(listModel);
         //Set up posts
@@ -143,16 +157,23 @@ public class MainWindow extends javax.swing.JFrame
     }
     
     //Update online list
-    public void updateOnline()
+    public void updateOnline(Boolean force)
     {
         ArrayList<String> comparer = onlineUsers;
         onlineUsers = myTalker.clientGetUsers(1);
-        if (!comparer.equals(onlineUsers))
+        if (!comparer.equals(onlineUsers) || force)
         {
             DefaultListModel listModel = new DefaultListModel();
             for(int i = 0; i < onlineUsers.size(); i++)
             {
-                listModel.add(i,onlineUsers.get(i));
+                if (myData.listOfFriends.contains(onlineUsers.get(i)))
+                {
+                    listModel.add(i,onlineUsers.get(i) + " (friend)");
+                }
+                else
+                {
+                    listModel.add(i,onlineUsers.get(i));
+                }
             }
             onlineList.setModel(listModel);
         }
@@ -193,16 +214,23 @@ public class MainWindow extends javax.swing.JFrame
             DefaultListModel listModel = new DefaultListModel();       
             for(int i = 0; i < myFriends.size(); i++)
             {
-                listModel.add(i,myFriends.get(i));
+                if (onlineUsers.contains(myFriends.get(i)))
+                {
+                    listModel.add(i,myFriends.get(i) + " (online)");
+                }
+                else
+                {
+                    listModel.add(i,myFriends.get(i) + " (offline)");
+                }
             }
             friendList.setModel(listModel);
+            updateOnline(true);
         }
     }
     
     public void updateInfoList()
     {
         UserData displayData = null;
-        
         if (friendList.getSelectedValue() != null)
         {
             DefaultListModel listModel = new DefaultListModel(); 
@@ -543,7 +571,13 @@ public class MainWindow extends javax.swing.JFrame
         {
             if (onlineList.getSelectedValue() != null)
             {
-                UserData friend = myTalker.getUserdata(onlineList.getSelectedValue());
+                String name = onlineList.getSelectedValue();
+                String tag = " (friend)";
+                if(name.contains(tag))
+                {
+                    name = name.replace(tag,"");
+                }
+                UserData friend = myTalker.getUserdata(name);
                 ClientChatter chatter = new ClientChatter(myData,friend);
                 new ChatWindow(chatter).setVisible(true);
             }
