@@ -208,6 +208,7 @@ public class ServerHandler implements Runnable
         {
             addFriendToData(clientsData.username, usernameToDo);
             addFriendToData(usernameToDo, clientsData.username);
+            updateReadData();
         }
         try
         {

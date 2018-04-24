@@ -239,8 +239,19 @@ public class MainWindow extends javax.swing.JFrame
         UserData displayData = null;
         if (friendList.getSelectedValue() != null)
         {
+            String selected = friendList.getSelectedValue();
+            String onlineTag = " (online)";
+            String offlineTag = " (offline)";
+            if (selected.contains(onlineTag))
+            {
+                selected = selected.replace(onlineTag,"");
+            }
+            else if (selected.contains(offlineTag))
+            {
+                selected = selected.replace(offlineTag,"");
+            }
             DefaultListModel listModel = new DefaultListModel(); 
-            displayData = myTalker.getUserdata(friendList.getSelectedValue());
+            displayData = myTalker.getUserdata(selected);
             listModel.add(0,"Place of birth:" + displayData.placeOfBirth);
             listModel.add(1,"Date of birth:" + displayData.dateOfBirth);
             for(int i = 0; i < displayData.listOfTastes.size(); i++)
