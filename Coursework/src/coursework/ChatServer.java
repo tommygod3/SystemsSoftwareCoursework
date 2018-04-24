@@ -12,7 +12,7 @@ public class ChatServer
     {
         int port = 9096;
         ServerSocket server = new ServerSocket(port);
-        ServerGUI gui = new ServerGUI();
+        ServerGUI gui = new ServerGUI("Music Social Network - Chat Server Output");
         gui.setVisible(true);
         while (true)
         {

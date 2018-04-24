@@ -6,6 +6,7 @@ package coursework;
 import java.io.*;
 import java.util.*;
 import java.net.*;
+import javax.swing.UIManager;
 
 public class Login extends javax.swing.JFrame 
 {
@@ -381,6 +382,7 @@ public class Login extends javax.swing.JFrame
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
+        
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
@@ -402,6 +404,14 @@ public class Login extends javax.swing.JFrame
             java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        try
+        {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
         //</editor-fold>
 
         /* Create and display the form */

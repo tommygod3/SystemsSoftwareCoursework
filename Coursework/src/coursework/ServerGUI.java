@@ -1,8 +1,16 @@
 package coursework;
 
+import javax.swing.UIManager;
+
 
 public class ServerGUI extends javax.swing.JFrame 
 {
+    public ServerGUI(String title) 
+    {
+        initComponents();
+        this.setTitle(title);
+    }
+    
     public ServerGUI() 
     {
         initComponents();
@@ -78,6 +86,14 @@ public class ServerGUI extends javax.swing.JFrame
             java.util.logging.Logger.getLogger(ServerGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        try
+        {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {

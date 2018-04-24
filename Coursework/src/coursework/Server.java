@@ -12,7 +12,7 @@ public class Server
     {
         int port = 9090;
         ServerSocket server = new ServerSocket(port);
-        ServerGUI gui = new ServerGUI();
+        ServerGUI gui = new ServerGUI("Music Social Network - Server Output");
         gui.setVisible(true);
         while (true)
         {
