@@ -67,12 +67,19 @@ public class ServerHandler implements Runnable
         {
             in = inFromClient.readObject();
             command = (String) in;
-            if ((command.equals("REGISTER"))||(command.equals("LOGIN")))
+            if ((command.equals("REGISTER")))
+            {
+                in = inFromClient.readObject();
+                dataU = (UserData) in;
+                in = inFromClient.readObject();
+                dataB = (byte[]) in;
+            }
+            if (command.equals("LOGIN"))
             {
                 in = inFromClient.readObject();
                 dataU = (UserData) in;
             }
-            if ((command.equals("GETDATA")) || (command.equals("REQUESTFRIEND")) || (command.equals("REPLYYES")) || (command.equals("REPLYNO")) || (command.equals("MAKEPOST")) || (command.equals("SENDSONG")) || (command.equals("GETSONG")))
+            if ((command.equals("GETDATA")) || (command.equals("REQUESTFRIEND")) || (command.equals("REPLYYES")) || (command.equals("REPLYNO")) || (command.equals("MAKEPOST")) || (command.equals("SENDSONG")) || (command.equals("GETSONG")) || (command.equals("GETPICTURE")))
             {
                 in = inFromClient.readObject();
                 dataS = (String) in;
@@ -88,68 +95,87 @@ public class ServerHandler implements Runnable
         {
             System.err.println("Error with redirect message: " +e.getMessage());
         }
-       if (command.equals("LOGOUT"))
-       {
-           logoutUser();
-           return true;
-       }
-       if (command.equals("GETALL"))
-       {
-           sendUsers(0);
-       }
-       if (command.equals("GETONLINE"))
-       {
-           sendUsers(1);
-       }
-       if (command.equals("GETDATA"))
-       {
-           sendOneUser(dataS);
-       }
-       if (command.equals("LOGIN"))
-       {
-           loginClient(dataU);
-       }
-       if (command.equals("REGISTER"))
-       {
-           registerClient(dataU);
-       }
-       if (command.equals("REQUESTFRIEND"))
-       {
-           requestFriendship(dataS);
-       }
-       if (command.equals("GETREQUESTS"))
-       {
-           sendRequests();
-       }
-       if (command.equals("REPLYYES"))
-       {
-           replyRequest(dataS,true);
-       }
-       if (command.equals("REPLYNO"))
-       {
-           replyRequest(dataS,false);
-       }
-       if (command.equals("MAKEPOST"))
-       {
-           makePost(dataS);
-       }
-       if (command.equals("GETPOSTS"))
-       {
-           sendPosts();
-       }
-       if (command.equals("SENDSONG"))
-       {
-           downloadSong(dataS,dataB);
-       }
-       if (command.equals("GETSONGS"))
-       {
-           sendSongs();
-       }
-       if (command.equals("GETSONG"))
-       {
-           sendSong(dataS);
-       }
-       return false;
+        if (command.equals("LOGOUT"))
+        {
+            logoutUser();
+            return true;
+        }
+        else if (command.equals("GETPICTURE"))
+        {
+            sendPic(dataS);
+        }
+        else if (command.equals("GETALL"))
+        {
+            sendUsers(0);
+        }
+        else if (command.equals("GETONLINE"))
+        {
+            sendUsers(1);
+        }
+        else if (command.equals("GETDATA"))
+        {
+            sendOneUser(dataS);
+        }
+        else if (command.equals("LOGIN"))
+        {
+            loginClient(dataU);
+        }
+        else if (command.equals("REGISTER"))
+        {
+            registerClient(dataU,dataB);
+        }
+        else if (command.equals("REQUESTFRIEND"))
+        {
+            requestFriendship(dataS);
+        }
+        else if (command.equals("GETREQUESTS"))
+        {
+            sendRequests();
+        }
+        else if (command.equals("REPLYYES"))
+        {
+            replyRequest(dataS,true);
+        }
+        else if (command.equals("REPLYNO"))
+        {
+            replyRequest(dataS,false);
+        }
+        else if (command.equals("MAKEPOST"))
+        {
+            makePost(dataS);
+        }
+        else if (command.equals("GETPOSTS"))
+        {
+            sendPosts();
+        }
+        else if (command.equals("SENDSONG"))
+        {
+            downloadSong(dataS,dataB);
+        }
+        else if (command.equals("GETSONGS"))
+        {
+            sendSongs();
+        }
+        else if (command.equals("GETSONG"))
+        {
+            sendSong(dataS);
+        }
+        return false;
+    }
+    
+    public void sendPic(String user)
+    {
+        File myFile = new File("pictures/"+user+".jpg");
+        byte[] toSend = null;
+        try
+        {
+            toSend = Files.readAllBytes(myFile.toPath());
+            outToClient.writeObject(toSend);
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
     }
     
     public void downloadSong(String songname, byte[] data)
@@ -345,7 +371,6 @@ public class ServerHandler implements Runnable
         {
             System.err.println(e.getMessage());
         }
-        
     }
     
     public void makePost(String post)
@@ -610,7 +635,7 @@ public class ServerHandler implements Runnable
         }
     }
     
-    public void registerClient(UserData dataIn)
+    public void registerClient(UserData dataIn, byte[] picture)
     {
         try
         {
@@ -629,6 +654,10 @@ public class ServerHandler implements Runnable
             bufferedWriter.newLine(); 
             outToClient.writeObject("SUCCESS"); 
             bufferedWriter.close();
+            
+            FileOutputStream picWriter = new FileOutputStream("pictures/" + dataIn.username + ".jpg");
+            picWriter.write(picture);
+            picWriter.close();
         }
         catch (Exception e)
         {

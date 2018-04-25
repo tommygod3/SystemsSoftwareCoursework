@@ -89,7 +89,7 @@ public class ClientTalker
     }
     
     //Sends user data to either log in or register to server, false = register, true = log in
-    public Boolean clientRegister(UserData theirData, Boolean existing)
+    public Boolean clientRegister(UserData theirData, Boolean existing, String picPath)
     {
         Object in = null;
         String reply = null;
@@ -106,6 +106,13 @@ public class ClientTalker
         {
             outToServer.writeObject(command);
             outToServer.writeObject(theirData);
+            if (!existing)
+            {
+                File myPic = new File(picPath);
+                byte[] picture = null;
+                picture = Files.readAllBytes(myPic.toPath());
+                outToServer.writeObject(picture);
+            }
             in = inFromServer.readObject();
         }
         catch (Exception e)
@@ -176,6 +183,23 @@ public class ClientTalker
         {
             System.err.println(e.getMessage());
         }
+    }
+    
+    public byte[] getPicture(String username)
+    {
+        byte[] data = null;
+        try
+        {
+            outToServer.writeObject("GETPICTURE");
+            outToServer.writeObject(username);
+            Object in = inFromServer.readObject();
+            data = (byte[]) in;
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+        return data;
     }
     
     public void makePost(String post)

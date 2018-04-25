@@ -6,12 +6,15 @@ package coursework;
 import java.io.*;
 import java.util.*;
 import java.net.*;
+import javax.swing.JFileChooser;
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Login extends javax.swing.JFrame 
 {
     public UserData inData;
     public ClientTalker myTalker;
+    String picturePath = null;
     
     public Login()
     {
@@ -31,7 +34,7 @@ public class Login extends javax.swing.JFrame
         {
             System.out.println("Attempting to make new user " + inData.username);
         }
-        if (myTalker.clientRegister(inData,existing) == true)
+        if (myTalker.clientRegister(inData,existing,picturePath) == true)
         {
             if (!existing)
             {
@@ -52,7 +55,21 @@ public class Login extends javax.swing.JFrame
             }
         }
     }
-
+    
+    public void choosePicture()
+    {
+        JFileChooser chooser = new JFileChooser();
+        String path = null;
+        String name = null;
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG FILES", "jpg");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.APPROVE_OPTION) 
+        {
+            picturePath = chooser.getSelectedFile().getAbsolutePath();
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialise the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -83,6 +100,7 @@ public class Login extends javax.swing.JFrame
         buttonRegister = new javax.swing.JButton();
         fieldLoginPassword = new javax.swing.JPasswordField();
         fieldRegisterPassword = new javax.swing.JPasswordField();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -206,6 +224,14 @@ public class Login extends javax.swing.JFrame
         fieldRegisterPassword.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         fieldRegisterPassword.setNextFocusableComponent(fieldRegisterPlaceOfBirth);
 
+        jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton1.setText("Upload profile picture");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -240,12 +266,14 @@ public class Login extends javax.swing.JFrame
                                 .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(139, 139, 139))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(comboBoxTastes, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(buttonAddGenre)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(comboBoxTastes, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(buttonAddGenre)))
+                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(buttonRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -284,9 +312,11 @@ public class Login extends javax.swing.JFrame
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(fieldRegisterPlaceOfBirth, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+                                .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(fieldRegisterDateOfBirth, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(fieldRegisterDateOfBirth, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(88, 88, 88))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -377,6 +407,11 @@ public class Login extends javax.swing.JFrame
         
     }//GEN-LAST:event_fieldRegisterDateOfBirthFocusLost
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        choosePicture();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -434,6 +469,7 @@ public class Login extends javax.swing.JFrame
     private javax.swing.JPasswordField fieldRegisterPassword;
     private javax.swing.JTextField fieldRegisterPlaceOfBirth;
     private javax.swing.JTextField fieldRegisterUsername;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

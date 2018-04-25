@@ -4,13 +4,16 @@
 package coursework;
 
 import java.util.ArrayList;
+import javax.swing.JFileChooser;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 public class ChatWindow extends javax.swing.JFrame {
 
     ClientChatter communicator;
     public ArrayList<String> messageHistory = new ArrayList<>();
+    public ArrayList<String> fileHistory = new ArrayList<>();
     Boolean running = true;
     
     Runnable updater = () -> 
@@ -24,6 +27,7 @@ public class ChatWindow extends javax.swing.JFrame {
             try
             {
                 updateMessages();
+                updateFiles();
                 Thread.sleep(500);
             }
             catch (Exception e)
@@ -58,6 +62,21 @@ public class ChatWindow extends javax.swing.JFrame {
             String[] message = messageHistory.get(i).split(",");
             textArea.append(message[0] + ": " + message[1] + "\n");
         }
+        fileHistory = communicator.getFileHistory();
+    }
+    
+    public void chooseFile()
+    {
+        JFileChooser chooser = new JFileChooser();
+        String path = null;
+        String name = null;
+        int returnVal = chooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.APPROVE_OPTION) 
+        {
+            path = chooser.getSelectedFile().getAbsolutePath();
+            name = chooser.getSelectedFile().getName();
+            communicator.sendFile(name,path);
+        }
     }
     
     public void updateMessages()
@@ -73,6 +92,17 @@ public class ChatWindow extends javax.swing.JFrame {
                 String[] message = messageHistory.get(i).split(",");
                 textArea.append(message[0] + ": " + message[1] + "\n");
             }
+        }
+    }
+    
+    public void updateFiles()
+    {
+        ArrayList<String> comparer = new ArrayList<>();
+        comparer = fileHistory;
+        fileHistory = communicator.getFileHistory();
+        if (!fileHistory.equals(comparer))
+        {
+            communicator.downloadRecentFile();
         }
     }
 
@@ -91,6 +121,7 @@ public class ChatWindow extends javax.swing.JFrame {
         textArea = new javax.swing.JTextArea();
         textIn = new javax.swing.JTextField();
         sendButton = new javax.swing.JButton();
+        sendFile = new javax.swing.JButton();
 
         jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
@@ -115,6 +146,13 @@ public class ChatWindow extends javax.swing.JFrame {
             }
         });
 
+        sendFile.setText("Upload");
+        sendFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendFileActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -123,9 +161,11 @@ public class ChatWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(textIn, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(sendFile, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(sendButton, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE))
+                        .addComponent(textIn, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(sendButton, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
         );
@@ -137,7 +177,9 @@ public class ChatWindow extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(sendButton, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-                    .addComponent(textIn))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(textIn)
+                        .addComponent(sendFile, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -159,6 +201,11 @@ public class ChatWindow extends javax.swing.JFrame {
         communicator.leave();
         running = false;
     }//GEN-LAST:event_formWindowClosing
+
+    private void sendFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendFileActionPerformed
+        // TODO add your handling code here:
+        chooseFile();
+    }//GEN-LAST:event_sendFileActionPerformed
 
     /**
      * @param args the command line arguments
@@ -201,6 +248,7 @@ public class ChatWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JButton sendButton;
+    private javax.swing.JButton sendFile;
     private javax.swing.JTextArea textArea;
     private javax.swing.JTextField textIn;
     // End of variables declaration//GEN-END:variables

@@ -65,6 +65,60 @@ public class ClientChatter
         return messageHistory;
     }
     
+    public ArrayList<String> getFileHistory()
+    {
+        ArrayList<String> fileHistory = new ArrayList<>();
+        try
+        {
+            outToChatServer.writeObject("GETFILES");
+            Object in = inFromChatServer.readObject();
+            fileHistory = (ArrayList<String>) in;
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+        return fileHistory;
+    }
+    
+    public void downloadRecentFile()
+    {
+        try
+        {
+            Object in = null;
+            byte[] data = null;
+            String name = null;
+            outToChatServer.writeObject("GETNEWFILE");
+            in = inFromChatServer.readObject();
+            name = (String) in;
+            in = inFromChatServer.readObject();
+            data = (byte[]) in;
+            FileOutputStream fileWriter = new FileOutputStream(myData.username + name);
+            fileWriter.write(data);
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    public void sendFile(String filename, String filepath)
+    {
+        try
+        {
+            //Send file
+            File myFile = new File(filepath);
+            byte[] byteArray = Files.readAllBytes(myFile.toPath());
+            outToChatServer.writeObject("SENDFILE");
+            outToChatServer.writeObject(filename);
+            outToChatServer.writeObject(byteArray);
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+    
     public void leave()
     {
         try

@@ -16,18 +16,36 @@ public class ChatServerHandler implements Runnable
     UserData clientData;
     UserData toData;
     public ArrayList<String> messageHistory = new ArrayList<>();
+    public ArrayList<String> fileHistory = new ArrayList<>();
     String fileNameChatStart= "chat/";
     String fileNameChatEnd= "chat.txt";
     String fileNameChat;
+    String fileNameChatFiles;
     
-    Runnable updater = () -> 
+    Runnable chatUpdater = () -> 
     {
         while(true)
         {
             try
             {
                 updateReadChat();
-                Thread.sleep(500);
+                Thread.sleep(2000);
+            }
+            catch (Exception e)
+            {
+                System.err.println(e.getMessage());
+            }
+        }
+    };
+    
+    Runnable fileUpdater = () -> 
+    {
+        while(true)
+        {
+            try
+            {
+                updateReadFiles();
+                Thread.sleep(2000);
             }
             catch (Exception e)
             {
@@ -61,6 +79,7 @@ public class ChatServerHandler implements Runnable
                     middle = toData.username + clientData.username;
                 }
                 fileNameChat = fileNameChatStart + middle + fileNameChatEnd;
+                fileNameChatFiles = fileNameChatStart + middle + "files.txt";
             }
             catch (Exception e)
             {
@@ -72,7 +91,8 @@ public class ChatServerHandler implements Runnable
         {
             System.err.println(e.getMessage());
         }
-        new Thread(updater).start();
+        new Thread(chatUpdater).start();
+        new Thread(fileUpdater).start();
     }
 
     public Boolean redirecor()
@@ -80,6 +100,7 @@ public class ChatServerHandler implements Runnable
         Object in = null;
         String command = null;
         String message = null;
+        byte[] data = null;
         try
         {
             in = inFromClient.readObject();
@@ -91,14 +112,30 @@ public class ChatServerHandler implements Runnable
                 message = (String) in;
                 updateWriteChat(message);
             }
-            if (command.equals("GET"))
+            else if (command.equals("GET"))
             {
                 outToClient.writeObject(messageHistory);
             }
-            if (command.equals("LEAVE"))
+            else if (command.equals("LEAVE"))
             {
                 client.close();
                 return true;
+            }
+            else if (command.equals("SENDFILE"))
+            {
+                in = inFromClient.readObject();
+                message = (String) in;
+                in = inFromClient.readObject();
+                data = (byte[]) in;
+                downloadFile(message,data);
+            }
+            else if (command.equals("GETNEWFILE"))
+            {
+                sendRecentFile();
+            }
+            else if (command.equals("GETFILES"))
+            {
+                outToClient.writeObject(fileHistory);
             }
         }
         catch (Exception e)
@@ -108,6 +145,80 @@ public class ChatServerHandler implements Runnable
         return false;
     }
     
+    public void downloadFile(String name, byte[] file)
+    {
+        updateWriteChat("Sending file: " + name);
+        try
+        {
+            FileOutputStream dataWriter = new FileOutputStream("chatfiles/" + name);
+            dataWriter.write(file);
+            dataWriter.close();
+            FileWriter fileWriter = new FileWriter(fileNameChatFiles, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(name);
+            bufferedWriter.newLine();
+            bufferedWriter.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println("Error writing request in: " + e.getMessage());
+        }
+    }
+    
+    public void sendRecentFile()
+    {
+        byte[] toSend = null;
+        try
+        {
+            String name = fileHistory.get(fileHistory.size()-1);
+            File theFile = new File("chatfiles/"+name);
+            toSend = Files.readAllBytes(theFile.toPath());
+            outToClient.writeObject(name);
+            outToClient.writeObject(toSend);
+        }
+        catch (Exception e)
+        {
+            System.err.println("Error writing request in: " + e.getMessage());
+        }
+    }
+    
+    public void updateReadFiles()
+    {
+        fileHistory.clear();
+        ArrayList<String> filesIn = new ArrayList<>();
+        File file = new File(fileNameChatFiles);
+        if(!file.exists()) 
+        { 
+            try
+            {
+                file.createNewFile();
+            }
+            catch (Exception e)
+            {
+                System.err.println(e.getMessage());
+            }
+        }
+        else
+        {
+            try
+            {
+                FileReader fileReader = new FileReader(fileNameChatFiles);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                String parser = bufferedReader.readLine();
+                while (parser != null)
+                {
+                    filesIn.add(parser);
+                    parser = bufferedReader.readLine();
+                }
+                bufferedReader.close();
+            }
+            catch(Exception e) 
+            {
+                System.err.println(e.getMessage());                
+            }
+            fileHistory = filesIn;
+        }
+    }
     
     public void updateReadChat()
     {
